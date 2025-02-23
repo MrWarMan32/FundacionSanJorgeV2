@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ShiftsResource extends Resource
 {
     protected static ?string $model = Shifts::class;
+    protected static ?string $navigationLabel = 'Citas';
+    protected static ?string $pluralLabel = 'Citas';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

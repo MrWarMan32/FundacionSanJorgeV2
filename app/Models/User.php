@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Address;
 use App\Models\Therapy;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -37,7 +39,13 @@ class User extends Authenticatable
         'disability_grade',
         'diagnosis',
         'medical_history', 
-        'address_id',
+        'canton',
+        'parish',
+        'site',
+        'street_1',
+        'street_2',
+        'reference',
+        'email_verified_at',
         'therapy_id',
     ];
 
@@ -64,16 +72,11 @@ class User extends Authenticatable
         ];
     }
 
-    // Relación con la tabla 'addresses'
-    public function address()
-    {
-        return $this->belongsTo(Address::class);
-    }
 
     // Relación con la tabla 'therapies'
-    public function therapy()
+    public function therapies()
     {
-        return $this->belongsTo(Therapy::class);
+        return $this->belongsTo(Therapy::class,'doctor_therapy', 'doctor_id', 'therapy_id');
     }
 
 }

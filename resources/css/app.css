@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#custom-wizard {
+    width: 5000px !important;
+    height: 800px !important; /* Ajusta la altura del Wizard */
+    overflow-y: auto;         /* Permite el desplazamiento vertical si es necesario */
+}

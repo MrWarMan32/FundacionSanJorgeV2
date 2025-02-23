@@ -45,8 +45,9 @@ class PatientsResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Nombre')->sortable(),
                 Tables\Columns\TextColumn::make('last_name')->label('Apellido')->sortable(),
-                Tables\Columns\TextColumn::make('email')->label('Correo')->sortable(),
+                // Tables\Columns\TextColumn::make('email')->label('Correo')->sortable(),
                 Tables\Columns\TextColumn::make('phone')->label('Teléfono')->sortable(),
+                Tables\Columns\TextColumn::make('disability')->label('Discapacidad')->sortable(),
                 Tables\Columns\TextColumn::make('status')->label('Estado')->badge()->color('success'),
             ])
             ->filters([

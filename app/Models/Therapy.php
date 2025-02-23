@@ -8,8 +8,8 @@ class Therapy extends Model
 {
     protected $fillable = ['therapy_type', 'description', 'duration'];
 
-    public function users()
+    public function doctors()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(User::class, 'doctor_therapy', 'therapy_id', 'doctor_id');
     }
 }
