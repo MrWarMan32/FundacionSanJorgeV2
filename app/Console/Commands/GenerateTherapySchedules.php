@@ -36,25 +36,22 @@ class GenerateTherapySchedules extends Command
     public function handle()
     {
         $therapies = [
-            1 => 'fisica', // ID 1 es Terapia Física
-            2 => 'lenguaje',  // ID 2 es Terapia de Lenguaje
-            3 => 'hipoterapia'      // ID 3 es Hipoterapia
-        ]; // Tipos de terapia
-        $doctors = [6, 8, 7]; // ID de los doctores disponibles (ajusta según tus IDs de doctores)
+            1 => ['name' => 'fisica', 'doctor_id' => 29], // Terapia física
+            2 => ['name' => 'lenguaje', 'doctor_id' => 30], // Terapia de lenguaje
+            3 => ['name' => 'hipoterapia', 'doctor_id' => 31], // hipoterapia
+        ];
 
-        foreach ($therapies as $therapyId => $therapyName) {
-            foreach ($doctors as $doctor) {
-                // Generar horarios para cada terapia
-                $this->createAppointmentSchedule($therapyId, $doctor);
-            }
+        foreach ($therapies as $therapyId => $data) {
+            $this->createAppointmentSchedule($therapyId, $data['doctor_id']);
         }
 
         $this->info('Horarios de citas generados con éxito.');
     }
 
-    private function createAppointmentSchedule($therapy, $doctor)
+
+    private function createAppointmentSchedule($therapyId, $doctorId)
     {
-        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']; // Días de la semana
+        $days = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes']; // Días de la semana
         $startTime = Carbon::createFromTime(8, 0, 0); // Hora de inicio a las 8:00 AM
         $endTime = Carbon::createFromTime(12, 0, 0); // Hora de fin a las 12:00 PM
 
@@ -62,18 +59,30 @@ class GenerateTherapySchedules extends Command
             $currentTime = $startTime->copy();
 
             // Crear citas cada 20 minutos hasta las 12 PM
-            while ($currentTime->lte($endTime)) {
-                Appointment::create([
-                    'therapy_id' => $therapy,
-                    'doctor_id' => $doctor,
+            while ($currentTime->addMinutes(20)->lte($endTime)) {
+                $start = $currentTime->copy()->subMinutes(20)->format('H:i:s'); // Restauramos la hora de inicio correcta
+                $end = $currentTime->format('H:i:s');
+
+                $existingAppointment = Appointment::where([
+                    'therapy_id' => $therapyId,
+                    'doctor_id' => $doctorId,
                     'day' => $day,
-                    'start_time' => $currentTime->format('H:i:s'),
-                    'end_time' => $currentTime->addMinutes(20)->format('H:i:s'),
-                    'available' => true,
-                ]);
+                    'start_time' => $start,
+                    'end_time' => $end,
+                ])->exists();
+
+                if (!$existingAppointment) {
+                    // Crear solo si no existe
+                    Appointment::create([
+                        'therapy_id' => $therapyId,
+                        'doctor_id' => $doctorId,
+                        'day' => $day,
+                        'start_time' => $start,
+                        'end_time' => $end,
+                        'available' => true,
+                    ]);
+                }
             }
         }
     }
-
-    
 }

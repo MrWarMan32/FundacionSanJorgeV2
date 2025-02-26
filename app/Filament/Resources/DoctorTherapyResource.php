@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\DB;
 
 class DoctorTherapyResource extends Resource  
 {
@@ -32,7 +33,7 @@ class DoctorTherapyResource extends Resource
             ->schema([
                 Forms\Components\Select::make('doctor_id')
                 ->label('Doctor')
-                ->options(User::where('user_type', 'doctor')->pluck('name', 'id'))
+                ->options(User::where('user_type', 'doctor')->pluck(DB::raw("CONCAT(name, ' ', last_name)"), 'id'))
                 ->searchable()
                 ->required(),
 
