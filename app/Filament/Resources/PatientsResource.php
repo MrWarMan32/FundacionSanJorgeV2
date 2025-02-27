@@ -23,7 +23,6 @@ class PatientsResource extends Resource
     protected static ?string $pluralLabel = 'Pacientes';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    
 
     public static function form(Form $form): Form
     {
@@ -36,7 +35,11 @@ class PatientsResource extends Resource
      // FILTRAR SOLO PACIENTES
      public static function getEloquentQuery(): Builder
      {
-         return parent::getEloquentQuery()->where('status', 'paciente');
+        
+        return parent::getEloquentQuery()
+        ->whereNotIn('status', ['aspirante'])
+        ->whereNotIn('user_type', ['admin'])
+        ->whereNotIn('user_type', ['doctor']);
      }
 
     public static function table(Table $table): Table

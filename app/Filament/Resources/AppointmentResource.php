@@ -25,9 +25,11 @@ class AppointmentResource extends Resource
     protected static ?string $navigationLabel = 'Horarios';
     protected static ?string $pluralLabel = 'Horarios';
 
+
     public static function form(Form $form): Form
     {
         return $form
+        
             ->schema([
                 Forms\Components\TextInput::make('doctor_id')
                     ->label('Doctor')
@@ -52,10 +54,13 @@ class AppointmentResource extends Resource
             ]);
     }
 
+    
+
     public static function table(Table $table): Table
     {
         return $table
         ->query(Appointment::query()) // Consulta base
+
             ->columns([
                 Tables\Columns\TextColumn::make('doctor.name')
                     ->label('Doctor')
@@ -94,15 +99,26 @@ class AppointmentResource extends Resource
                 //     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                SelectFilter::make('therapy_id')
-                    ->relationship('therapy', 'therapy_type')
-                    ->label('Filtrar por terapia')
-                    ->options([
-                        1 => 'Terapia Física',
-                        2 => 'Terapia de Lenguaje',
-                        3 => 'Hipoterapia',
-                    ])
-            ])
+            // Filtro para la terapia
+            Tables\Filters\SelectFilter::make('therapy_id')
+            ->relationship('therapy', 'therapy_type')
+            ->label('Filtrar por terapia')
+            ->options([
+                1 => 'Terapia Física',
+                2 => 'Terapia de Lenguaje',  
+                3 => 'Hipoterapia',
+           ]),
+        // Filtro para el día de la semana
+        Tables\Filters\SelectFilter::make('day')
+        ->label('Filtrar por Día')
+        ->options([
+            'Lunes' => 'Lunes',
+            'Martes' => 'Martes',
+            'Miercoles' => 'Miercoles',
+            'Jueves' => 'Jueves',
+            'Viernes' => 'Viernes',
+            ]),
+          ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])

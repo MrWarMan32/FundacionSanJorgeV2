@@ -29,11 +29,22 @@ class UserResource extends Resource
     protected static ?string $pluralLabel = 'Usuarios';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    //NO MOSTRAR USUARIOS QUE YA SON PACIENTES
+    //NO MOSTRAR USUARIOS PACIENTES, DOCTORES  
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('status', '!=', 'paciente');
+        return parent::getEloquentQuery()
+        ->where('status', '!=', 'paciente')
+        ->where('user_type', '!=', 'doctor')
+        ->where(function (Builder $query) {
+            $query->where('user_type', '!=', 'admin')
+                  ->orWhere('status', '!=', 'paciente');
+        })
+        ->where(function (Builder $query) {
+            $query->where('user_type', '!=', 'admin')
+                  ->orWhere('status', '!=', 'aspirante');
+        });
     }
+
 
     public static function form(Form $form): Form
     {
@@ -41,14 +52,14 @@ class UserResource extends Resource
 
             Wizard::make()
             ->steps([
-                Step::make('Información del usuario')->schema([
+                Step::make('Información del Aspirante')->schema([
                     Forms\Components\TextInput::make('name')
-                    ->label('Nombre')
+                    ->label('Nombres')
                     ->required()
                     ->maxLength(100),
 
                     Forms\Components\TextInput::make('last_name')
-                    ->label('Apellido')
+                    ->label('Apellidos')
                     ->required(),
 
                     Forms\Components\TextInput::make('id_card')
@@ -79,22 +90,14 @@ class UserResource extends Resource
                     ->label('Etnia')
                     ->nullable()
                     ->maxLength(100),
-
-                   Forms\Components\TextInput::make('phone')
-                   ->label('Teléfono')
-                   ->nullable()
-                   ->maxLength(20),
    
-                   Forms\Components\Select::make('user_type')
-                   ->label('Tipo de Usuario')
-                   ->options([
-                       'admin' => 'Administrador',
-                       'doctor' => 'Doctor',
-                       'paciente' => 'Paciente',
-                       'usuario' => 'Usuario',
-                   ])
-                   ->default('usuario')
-                   ->required(),
+                //    Forms\Components\Select::make('user_type')
+                //    ->label('Tipo de Usuario')
+                //    ->options([
+                //        'usuario' => 'Usuario',
+                //    ])
+                //    ->default('usuario')
+                //    ->required(),
 
                    Forms\Components\Select::make('status')
                    ->label('Estado')
@@ -105,18 +108,39 @@ class UserResource extends Resource
                    ->default('aspirante')
                    ->required(),
 
-                   Forms\Components\TextArea::make('disability')
-                   ->label('Discapacidad')
-                   ->nullable(),
+                   Forms\Components\Select::make('disability_type')
+                   ->label('Tipo de Discapacidad')
+                   ->options([
+                    'Fisica' => 'Física',
+                    'Intelectual' => 'Intelectual',
+                    'Sensorial' => 'Sensorial',
+                    'Psicosocial' => 'Psicosocial',
+                    'Visceral' => 'Visceral',
+                    'Otra' => 'Otra',
+                    ])
+                    ->multiple()
+                    ->native(false)
+                    ->required(),
+
+                   Forms\Components\Select::make('disability_level')
+                   ->label('Nivel de Discapacidad')
+                   ->options([
+                        'En Proceso' => 'En Proceso',
+                        'Leve' => 'Leve',
+                        'Moderado' => 'Moderado',
+                        'Grave' => 'Grave',
+                        'Muy Grave' => 'Muy Grave',
+                    ])
+                    ->required(),
+
+                    Forms\Components\TextInput::make('disability_grade')
+                   ->label('Grado de Discapacidad')
+                   ->nullable()
+                   ->numeric(),
 
                    Forms\Components\Toggle::make('id_card_status')
                    ->label('Posee Carnet de Discapacidad')
                    ->default(false),
-
-                   Forms\Components\TextInput::make('disability_grade')
-                   ->label('Grado de Discapacidad')
-                   ->nullable()
-                   ->numeric(),
 
                    Forms\Components\TextArea::make('diagnosis')
                    ->label('Diagnóstico')
@@ -127,7 +151,30 @@ class UserResource extends Resource
                    ->nullable(),
                 ]),
 
-                Step::make('Dirección del usuario')->schema([
+                Step::make('Informacion Representante')->schema([
+                    Forms\Components\TextInput::make('representative_name')
+                    ->label('Nombre')
+                    ->nullable()
+                    ->maxLength(100),
+
+                    Forms\Components\TextInput::make('representative_last_name')
+                    ->label('Apellido')
+                    ->nullable()
+                    ->maxLength(100),
+
+                    Forms\Components\TextInput::make('representative_id_card')
+                    ->label('Cédula')
+                    ->nullable()
+                    ->maxLength(20),
+
+                    Forms\Components\TextInput::make('phone')
+                    ->label('Teléfono')
+                    ->nullable()
+                    ->maxLength(20),
+
+                 ]),
+
+                Step::make('Dirección del Aspirante')->schema([
                    Forms\Components\TextInput::make('canton')
                    ->label('Cantón')
                    ->required()
@@ -158,11 +205,13 @@ class UserResource extends Resource
                    ->maxLength(100),
                 ]),
 
-                Step::make('Creacion cuenta de Usuario (Dejar en blanco la contraseña )')->schema([
+                Step::make('Creacion cuenta de Aspirante (Dejar en blanco la contraseña )')->schema([
                     
                     Forms\Components\TextInput::make('email')
                     ->email()
                     ->label('Correo Electrónico')
+                    ->placeholder('nombre.apellido@gmail.com')
+                    ->helperText('Se recomienda utilizar este formato en caso de no poseer correo')
                     ->required()
                     ->maxLength(100)
                     ->unique(ignoreRecord: true),
@@ -203,18 +252,39 @@ class UserResource extends Resource
 
     }
 
+
+
+
+
+
+
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                ->label('Nombre')
+                ->label('Nombres')
                 ->searchable(),
+
+                Tables\Columns\TextColumn::make('disability_type')
+                ->label('Tipo de Discapacidad')
+                ->formatStateUsing(fn ($state) => is_array($state) ? implode(', ', $state) : $state),
+                // ->sortable(),
+
+                Tables\Columns\TextColumn::make('disability_level')
+                ->label('Nivel'),
+                // ->sortable(),
+
+                Tables\Columns\TextColumn::make('disability_grade')
+                ->label('Grado'),
+                // ->sortable(),
+
                 Tables\Columns\TextColumn::make('phone')
                 ->label('Teléfono')
                 ->searchable(),
-                Tables\Columns\TextColumn::make('status')
-                ->label('Estado')->badge()->color('success'),
+
+                // Tables\Columns\TextColumn::make('status')
+                // ->label('Estado')->badge()->color('success'),
             ])
             ->filters([
                 //
@@ -252,4 +322,10 @@ class UserResource extends Resource
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+
 }

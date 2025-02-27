@@ -21,6 +21,13 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+
+
+      protected $casts = [
+        'disability_type' => 'array',
+       ];
+
+
     protected $fillable = [
         'name',
         'email',
@@ -34,7 +41,11 @@ class User extends Authenticatable
         'phone',
         'user_type',
         'status',
-        'disability', 
+        'disability_type',
+        'disability_level',
+        'representative_name',
+        'representative_last_name',
+        'representative_id_card',
         'id_card_status',
         'disability_grade',
         'diagnosis',
@@ -48,6 +59,7 @@ class User extends Authenticatable
         'email_verified_at',
         'therapy_id',
     ];
+
 
     /**
      * The attributes that should be hidden for serialization.
