@@ -24,8 +24,9 @@ class DoctorTherapyResource extends Resource
     protected static ?string $model = DoctorTherapy::class;
     protected static ?string $navigationLabel = 'Terapeutas';
     protected static ?string $pluralLabel = 'Terapeutas';
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Gestion de Usuarios';
+    protected static ?int $navigationSort = 4;
+    protected static ?string $navigationIcon = 'heroicon-o-user';
 
     public static function form(Form $form): Form
     {

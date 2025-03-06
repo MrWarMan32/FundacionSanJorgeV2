@@ -30,7 +30,8 @@ class ShiftsResource extends Resource
     protected static ?string $model = Shifts::class;
     protected static ?string $navigationLabel = 'Citas';
     protected static ?string $pluralLabel = 'Citas';
-
+    protected static ?string $navigationGroup = 'Gestion de Citas';
+    protected static ?int $navigationSort = 5;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form

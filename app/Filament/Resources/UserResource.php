@@ -25,9 +25,11 @@ use Illuminate\Support\Str;
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
-    protected static ?string $navigationLabel = 'Usuarios';
-    protected static ?string $pluralLabel = 'Usuarios';
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationLabel = 'Aspirantes';
+    protected static ?string $pluralLabel = 'Aspirantes';
+    protected static ?string $navigationGroup = 'Gestion de Usuarios';
+    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     //NO MOSTRAR USUARIOS PACIENTES, DOCTORES  
     public static function getEloquentQuery(): Builder
@@ -52,6 +54,7 @@ class UserResource extends Resource
 
             Wizard::make()
             ->columnSpan('full')
+            ->columns(2)
             ->steps([
                 Step::make('Información del Aspirante')->schema([
                     Forms\Components\TextInput::make('name')
@@ -200,7 +203,6 @@ class UserResource extends Resource
                 ]),
 
                 Step::make('Creacion cuenta de Aspirante (Dejar en blanco la contraseña )')->schema([
-                    
                     Forms\Components\TextInput::make('email')
                     ->email()
                     ->label('Correo Electrónico')
@@ -243,7 +245,6 @@ class UserResource extends Resource
                  ])
             ]),
         ]);
-
     }
 
 

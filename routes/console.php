@@ -8,11 +8,13 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-
-// Registrar el comando
+ 
+// Registrar el comando de citas recurrentes viernes a las 12:30 pm
 Artisan::command('generate:recurring-shifts', function () {
     $this->call(\App\Console\Commands\GenerateRecurringShifts::class);
 });
 
-// Programar el comando para que se ejecute semanalmente
-Schedule::command('generate:recurring-shifts')->weekly();
+// Registrar el comando de citas completadas, cada 20 min
+Artisan::command('app:update-completed-shifts', function () {
+    $this->call(\App\Console\Commands\UpdateCompletedShifts::class);
+});

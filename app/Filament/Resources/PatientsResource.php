@@ -21,7 +21,9 @@ class PatientsResource extends Resource
     protected static ?string $model = User::class;
     protected static ?string $navigationLabel = 'Pacientes';
     protected static ?string $pluralLabel = 'Pacientes';
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Gestion de Usuarios';
+    protected static ?int $navigationSort = 3;
+    protected static ?string $navigationIcon = 'heroicon-o-user';
 
 
     public static function form(Form $form): Form
