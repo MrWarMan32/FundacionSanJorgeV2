@@ -172,17 +172,49 @@ class ShiftsResource extends Resource
         ];
     }
 
+    public static function create(array $data): Model
+    {
+        Log::info('Creating shift with data: ', $data);
+
+        $appointment = Appointment::find($data['appointment_id']);
+
+        if (!$appointment) {
+            throw new \Exception('Appointment not found');
+        }
+
+        $shift = static::getModel()::create([
+            'patient_id' => $data['patient_id'],
+            'doctor_id' => $data['doctor_id'],
+            'therapy_id' => $data['therapy_id'],
+            'start_time' => $appointment->start_time,
+            'end_time' => $appointment->end_time,
+            'is_recurring' => $data['is_recurring'],
+            'notes' => $data['notes'],
+            'appointment_id' => $data['appointment_id'],
+            'is_modified' => $data['is_emergency'],
+        ]);
+
+        $appointment->update([
+            'available' => 0,
+            'patient_id' => $data['patient_id'],
+        ]);
+        
+        Log::info('Shift created and appointment updated');
+
+        return $shift;
+    }
+
     // // Hook para actualizar la tabla `appointments` al guardar la cita
-    // protected static function afterCreate(Model $record): void
-    // {
-    //     $appointment = Appointment::find($record->appointment_id);
-    //        if ($appointment) {
-    //        $appointment->available = 0;
-    //        $appointment->patient_id = $record->patient_id;
-    //        $appointment->save();
-    //        Log::info("Cita asignada a paciente ID: " . $record->patient_id);
-    //    }
-    // }
+    protected static function afterCreate(Model $record): void
+    {
+        $appointment = Appointment::find($record->appointment_id);
+           if ($appointment) {
+           $appointment->available = 0;
+           $appointment->patient_id = $record->patient_id;
+           $appointment->save();
+           Log::info("Cita asignada a paciente ID: " . $record->patient_id);
+       }
+    }
 
     public static function getPages(): array
     {
@@ -192,31 +224,6 @@ class ShiftsResource extends Resource
             'edit' => Pages\EditShifts::route('/{record}/edit'),
         ];
     }
-
-
-    // public static function create(array $data): Model
-    // {
-    //     $appointment = Appointment::find($data['appointment_id']);
-
-    //     $shift = static::getModel()::create([
-    //         'patient_id' => $data['patient_id'],
-    //         'doctor_id' => $data['doctor_id'],
-    //         'therapy_id' => $data['therapy_id'],
-    //         'start_time' => $appointment->start_time,
-    //         'end_time' => $appointment->end_time,
-    //         'is_recurring' => $data['is_recurring'],
-    //         'notes' => $data['notes'],
-    //         'appointment_id' => $data['appointment_id'],
-    //         'is_modified' => $data['is_emergency'],
-    //     ]);
-
-    //     $appointment->update([
-    //         'available' => 0,
-    //         'patient_id' => $data['patient_id'],
-    //     ]);
-
-    //     return $shift;
-    // }
 
 
 }
