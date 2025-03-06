@@ -85,10 +85,29 @@ class User extends Authenticatable
     }
 
 
+    /// Relación de un usuario (paciente) con las citas (shifts
+    public function shifts()
+    {
+        return $this->hasMany(Shifts::class, 'patient_id');
+    }
+
+    // Relación de un usuario (doctor) con las citas (shifts)
+    public function shiftsAsDoctor()
+    {
+        return $this->hasMany(Shifts::class, 'doctor_id');
+    }
+
+
     // Relación con la tabla 'therapies'
     public function therapies()
     {
         return $this->belongsTo(Therapy::class,'doctor_therapy', 'doctor_id', 'therapy_id');
+    }
+
+    // Relación con la tabla 'appointments'
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'doctor_id');
     }
 
 }
