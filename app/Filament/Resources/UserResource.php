@@ -51,6 +51,7 @@ class UserResource extends Resource
         return $form->schema([
 
             Wizard::make()
+            ->columnSpan('full')
             ->steps([
                 Step::make('Información del Aspirante')->schema([
                     Forms\Components\TextInput::make('name')
@@ -91,13 +92,6 @@ class UserResource extends Resource
                     ->nullable()
                     ->maxLength(100),
    
-                //    Forms\Components\Select::make('user_type')
-                //    ->label('Tipo de Usuario')
-                //    ->options([
-                //        'usuario' => 'Usuario',
-                //    ])
-                //    ->default('usuario')
-                //    ->required(),
 
                    Forms\Components\Select::make('status')
                    ->label('Estado')
