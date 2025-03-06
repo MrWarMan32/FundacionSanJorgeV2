@@ -13,6 +13,7 @@ class Appointment extends Model
         'start_time',
         'end_time',
         'available',
+        'patient_id'
     ];
 
     public function therapy()
@@ -23,5 +24,15 @@ class Appointment extends Model
     public function doctor()
     {
         return $this->belongsTo(User::class,'doctor_id');
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(User::class, 'patient_id');
+    }
+
+    public function shift()
+    {
+       return $this->hasOne(Shifts::class, 'appointment_id');
     }
 }
