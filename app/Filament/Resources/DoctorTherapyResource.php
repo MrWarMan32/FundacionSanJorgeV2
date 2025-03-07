@@ -26,7 +26,7 @@ class DoctorTherapyResource extends Resource
     protected static ?string $pluralLabel = 'Terapeutas';
     protected static ?string $navigationGroup = 'Gestion de Usuarios';
     protected static ?int $navigationSort = 4;
-    protected static ?string $navigationIcon = 'heroicon-o-user';
+    protected static ?string $navigationIcon = 'heroicon-o-identification';
 
     public static function form(Form $form): Form
     {

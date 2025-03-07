@@ -3,21 +3,30 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Shifts;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Shifts;
 
 class CertificateController extends Controller
 {
     public function generateCertificate($id)
     {
-        $shift = Shifts::findOrFail($id);
+        $shifts = $this->getDataForPdf($id);
 
-        if ($shift->status !== 'completed') {
-            return redirect()->back()->with('error', 'La cita no está en estado completado.');
-        }
+        $pdf = Pdf::loadView('certificates.certificate', ['shift' => $shifts]);
+        return $pdf->download('certificate.pdf');
+    }
 
-        $pdf = PDF::loadView('certificates.certificate', compact('shift'));
+    protected function getDataForPdf($shiftId)
+    {
+        // Obtén los datos necesarios para el PDF
+        $shifts = Shifts::with(['patient', 'doctor', 'therapy'])->findOrFail($shiftId);
 
-        return $pdf->download('certificado_cita_' . $shift->id . '.pdf');
+        return [
+            'patient_name' => $shifts->patient->name,
+            'doctor_name' => $shifts->doctor->name,
+            'therapy_type' => $shifts->therapy->therapy_type,
+            'start_time' => $shifts->start_time,
+            'end_time' => $shifts->end_time,
+        ];
     }
 }

@@ -16,6 +16,7 @@ use Filament\Forms\Components\Toggle;
 use App\Models\User;
 use App\Models\Appointment;
 use App\Models\Therapy;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms\Components\Textarea;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
@@ -32,7 +33,7 @@ class ShiftsResource extends Resource
     protected static ?string $pluralLabel = 'Citas';
     protected static ?string $navigationGroup = 'Gestion de Citas';
     protected static ?int $navigationSort = 5;
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-calendar';
 
     public static function form(Form $form): Form
     {
@@ -88,21 +89,21 @@ class ShiftsResource extends Resource
                     ->required(),
 
 
-                Select::make('appointment_id')
-                    ->label('Horario Disponible')
-                    ->options(fn (callable $get) => Appointment::where('doctor_id', $get('doctor_id'))
-                       ->where('therapy_id', $get('therapy_id'))
-                       ->where('day', $get('day'))
-                       ->where('available', 1)
-                       ->orderBy('start_time')
-                       ->get()
-                       ->mapWithKeys(fn ($appointment) => [
-                           $appointment->id => $appointment->start_time . ' - ' . $appointment->end_time
-                       ]))
-                    ->reactive()
-                    ->searchable()
-                    ->preload()
-                    ->required(),
+                // Select::make('appointment_id')
+                //     ->label('Horario Disponible')
+                //     ->options(fn (callable $get) => Appointment::where('doctor_id', $get('doctor_id'))
+                //        ->where('therapy_id', $get('therapy_id'))
+                //        ->where('day', $get('day'))
+                //        ->where('available', 1)
+                //        ->orderBy('start_time')
+                //        ->get()
+                //        ->mapWithKeys(fn ($appointment) => [
+                //            $appointment->id => $appointment->start_time . ' - ' . $appointment->end_time
+                //        ]))
+                //     ->reactive()
+                //     ->searchable()
+                //     ->preload()
+                //     ->required(),
 
 
                 Textarea::make('notes')
@@ -157,6 +158,12 @@ class ShiftsResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+
+                Tables\Actions\Action::make('downloadPdf')
+                ->label('Crear PDF')
+                ->requiresConfirmation()
+                ->url(fn ($record) => route('certificates.generate', $record->id))
+                ->openUrlInNewTab(),
 
             ])
             ->bulkActions([
