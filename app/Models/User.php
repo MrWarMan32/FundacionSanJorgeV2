@@ -58,8 +58,21 @@ class User extends Authenticatable
         'reference',
         'email_verified_at',
         'therapy_id',
+        'id_address',
     ];
 
+
+    //eliminar usuario y direccion asociada
+    protected static function booted()
+    {
+        static::deleting(function (User $user) {
+            if ($user->address) {
+                $user->id_address = null;
+                $user->save();
+                $user->address->delete();
+            }
+        });
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -109,5 +122,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Appointment::class, 'doctor_id');
     } 
+
+    //relacion tabla addresses
+    public function address(): BelongsTo
+    {
+        return $this->belongsTo(Address::class, 'id_address');
+    }
 
 }

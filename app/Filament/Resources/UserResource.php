@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
+use App\Models\Address;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -17,8 +18,12 @@ use Filament\Tables\Actions\DeleteAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Wizard\Step;
+use Filament\Forms\FormsComponent;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 
@@ -103,7 +108,8 @@ class UserResource extends Resource
                        'paciente' => 'Paciente',
                    ])
                    ->default('aspirante')
-                   ->required(),
+                   ->required()
+                   ->hidden(),
 
                    Forms\Components\Select::make('disability_type')
                    ->label('Tipo de Discapacidad')
@@ -172,34 +178,102 @@ class UserResource extends Resource
                  ]),
 
                 Step::make('Dirección del Aspirante')->schema([
-                   Forms\Components\TextInput::make('canton')
-                   ->label('Cantón')
-                   ->required()
-                   ->maxLength(100),
 
-                   Forms\Components\TextInput::make('parish')
-                   ->label('Parroquia')
-                   ->required(),
+                    Forms\Components\Select::make('id_address')
+                    // ->relationship('address', 'reference')
+                    ->options(Address::all()->mapWithKeys(function ($address) {
+                        $parroquia = $address->parroquia ? $address->parroquia->parroquia : 'Parroquia no definida';
+                        $street_1 = $address->street_1 ?? 'Calle principal no definida';
+                        return [$address->id => $parroquia . ' - ' . $street_1];
+                    }))
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        Select::make('id_provincia')
+                        ->label('Provincia')
+                        ->options(DB::table('provincia')->pluck('provincia', 'id'))
+                        ->reactive()
+                        ->afterStateUpdated(fn ($set) => $set('id_canton', null)),
+
+
+                        Select::make('id_canton')
+                        ->label('Cantón')
+                        ->options(function (callable $get) {
+                            if (!$get('id_provincia')) {
+                                return [];
+                            }
+                            return DB::table('canton')->where('id_provincia', $get('id_provincia'))->pluck('canton', 'id');
+                        })
+                        ->reactive()
+                        ->afterStateUpdated(fn ($set) => $set('id_parroquia', null)),
+
+                        Select::make('id_parroquia')
+                        ->label('Parroquia')
+                        ->options(function (callable $get) {
+                            if (!$get('id_canton')) {
+                                return [];
+                            }
+                            return DB::table('parroquia')->where('id_canton', $get('id_canton'))->pluck('parroquia', 'id');
+                        })
+                        ->reactive(),
+
+                        TextInput::make('street_1')
+                        ->label('Calle Principal')
+                        ->required()
+                        ->maxLength(100),
+
+                        TextInput::make('street_2')
+                        ->label('Calle Secundaria')
+                        ->nullable()
+                        ->maxLength(100),
+
+                        Textarea::make('reference')
+                        ->label('Referencia')
+                        ->nullable()
+                        ->maxLength(255),
+                    ])
+                    ->createOptionUsing(function (array $data): int {
+                        $address = Address::create([
+                            'id_provincia' => $data['id_provincia'],
+                            'id_canton' => $data['id_canton'],
+                            'id_parroquia' => $data['id_parroquia'],
+                            'street_1' => $data['street_1'],
+                            'street_2' => $data['street_2'],
+                            'reference' => $data['reference'],
+                        ]);
+            
+                        return $address->id;
+                    })
+                    ->required(),
+
+                //    Forms\Components\TextInput::make('canton')
+                //    ->label('Cantón')
+                //    ->required()
+                //    ->maxLength(100),
+
+                //    Forms\Components\TextInput::make('parish')
+                //    ->label('Parroquia')
+                //    ->required(),
                    
-                   Forms\Components\TextInput::make('site')    
-                   ->label('Sector')
-                   ->required()
-                   ->maxLength(100),
+                //    Forms\Components\TextInput::make('site')    
+                //    ->label('Sector')
+                //    ->required()
+                //    ->maxLength(100),
 
-                   Forms\Components\TextInput::make('street_1')
-                   ->label('Calle Principal')
-                   ->required()
-                   ->maxLength(100),
+                //    Forms\Components\TextInput::make('street_1')
+                //    ->label('Calle Principal')
+                //    ->required()
+                //    ->maxLength(100),
 
-                   Forms\Components\TextInput::make('street_2')
-                   ->label('Calle Secundaria')
-                   ->nullable()
-                   ->maxLength(100),
+                //    Forms\Components\TextInput::make('street_2')
+                //    ->label('Calle Secundaria')
+                //    ->nullable()
+                //    ->maxLength(100),
 
-                   Forms\Components\TextInput::make('reference')
-                   ->label('Referencia')
-                   ->nullable()
-                   ->maxLength(100),
+                //    Forms\Components\TextInput::make('reference')
+                //    ->label('Referencia')
+                //    ->nullable()
+                //    ->maxLength(100),
                 ]),
 
                 Step::make('Creacion cuenta de Aspirante (Dejar en blanco la contraseña )')->schema([
@@ -321,6 +395,59 @@ class UserResource extends Resource
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
+    }
+
+    protected function handleRecordCreation(array $data): \Illuminate\Database\Eloquent\Model
+    {
+        $user = User::create([
+            'name' => $data['name'],
+            'last_name' => $data['last_name'],
+            'id_card' => $data['id_card'],
+            'gender' => $data['gender'],
+            'birth_date' => $data['birth_date'],
+            'age' => $data['age'],
+            'ethnicity' => $data['ethnicity'],
+            'status' => $data['status'],
+            'disability_type' => $data['disability_type'],
+            'disability_level' => $data['disability_level'],
+            'disability_grade' => $data['disability_grade'],
+            'id_card_status' => $data['id_card_status'],
+            'diagnosis' => $data['diagnosis'],
+            'medical_history' => $data['medical_history'],
+            'representative_name' => $data['representative_name'],
+            'representative_last_name' => $data['representative_last_name'],
+            'representative_id_card' => $data['representative_id_card'],
+            'phone' => $data['phone'],
+        ]);
+
+        if ($data['id_parroquia']) {
+            $address = Address::create([
+                'id_provincia' => $data['id_provincia'],
+                'id_canton' => $data['id_canton'],
+                'id_parroquia' => $data['id_parroquia'],
+                'calle_principal' => $data['calle_principal'],
+                'calle_secundaria' => $data['calle_secundaria'],
+                'numero' => $data['numero'],
+                'referencia' => $data['referencia'],
+                'codigo_postal' => $data['codigo_postal'],
+                'tipo_direccion' => $data['tipo_direccion'],
+            ]);
+
+            $user->id_address = $address->id;
+        }
+
+        if ($data['email']) {
+            $user->email = $data['email'];
+            if ($data['password']) {
+                $user->password = Hash::make($data['password']);
+            }
+            $user->email_verified_at = now();
+            $user->remember_token = Str::random(60);
+        }
+
+        $user->save();
+
+        return $user;
     }
 
 }
