@@ -23,7 +23,7 @@ class AppointmentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clock';
     protected static ?string $navigationLabel = 'Horarios';
-    protected static ?string $navigationGroup = 'Gestion Recursos';
+    protected static ?string $navigationGroup = 'Gestion de Recursos';
     protected static ?int $navigationSort = 7;
     protected static ?string $pluralLabel = 'Horarios';
 

@@ -19,7 +19,7 @@ class CertificatesResource extends Resource
 
     protected static ?string $navigationLabel = 'Certificados';
     protected static ?string $pluralLabel = 'Certificados';
-    protected static ?string $navigationGroup = 'Gestion Recursos';
+    protected static ?string $navigationGroup = 'Gestion de Recursos';
     protected static ?int $navigationSort = 8;
     protected static ?string $navigationIcon = 'heroicon-o-document-check';
 
