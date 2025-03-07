@@ -89,21 +89,21 @@ class ShiftsResource extends Resource
                     ->required(),
 
 
-                // Select::make('appointment_id')
-                //     ->label('Horario Disponible')
-                //     ->options(fn (callable $get) => Appointment::where('doctor_id', $get('doctor_id'))
-                //        ->where('therapy_id', $get('therapy_id'))
-                //        ->where('day', $get('day'))
-                //        ->where('available', 1)
-                //        ->orderBy('start_time')
-                //        ->get()
-                //        ->mapWithKeys(fn ($appointment) => [
-                //            $appointment->id => $appointment->start_time . ' - ' . $appointment->end_time
-                //        ]))
-                //     ->reactive()
-                //     ->searchable()
-                //     ->preload()
-                //     ->required(),
+                Select::make('appointment_id')
+                    ->label('Horario Disponible')
+                    ->options(fn (callable $get) => Appointment::where('doctor_id', $get('doctor_id'))
+                       ->where('therapy_id', $get('therapy_id'))
+                       ->where('day', $get('day'))
+                       ->where('available', 1)
+                       ->orderBy('start_time')
+                       ->get()
+                       ->mapWithKeys(fn ($appointment) => [
+                           $appointment->id => $appointment->start_time . ' - ' . $appointment->end_time
+                       ]))
+                    ->reactive()
+                    ->searchable()
+                    ->preload()
+                    ->required(),
 
 
                 Textarea::make('notes')
@@ -157,10 +157,16 @@ class ShiftsResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->button()
+                ->extraAttributes(['class' => 'bg-indigo-600 hover:bg-indigo-700']),
 
                 Tables\Actions\Action::make('downloadPdf')
                 ->label('Crear PDF')
+                // ->icon('heroicon-o-document-check')
+                // ->color('blue')
+                ->button()
+                ->extraAttributes(['class' => 'bg-indigo-600 hover:bg-indigo-700'])
                 ->requiresConfirmation()
                 ->url(fn ($record) => route('certificates.generate', $record->id))
                 ->openUrlInNewTab(),

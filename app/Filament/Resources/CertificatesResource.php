@@ -21,7 +21,7 @@ class CertificatesResource extends Resource
     protected static ?string $pluralLabel = 'Certificados';
     protected static ?string $navigationGroup = 'Gestion Recursos';
     protected static ?int $navigationSort = 8;
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-document-check';
 
     public static function form(Form $form): Form
     {
