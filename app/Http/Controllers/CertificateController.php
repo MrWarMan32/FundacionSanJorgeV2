@@ -13,6 +13,12 @@ class CertificateController extends Controller
         $shifts = $this->getDataForPdf($id);
 
         $pdf = Pdf::loadView('certificates.certificate', ['shift' => $shifts]);
+        // ->setOptions([
+        //     'defaultFont' => 'sans-serif',
+        //     'isHtml5ParserEnabled' => true,
+        //     'isRemoteEnabled' => true,
+        //     'header-html' => view('certificates.encabezado')->render(), // Agregamos el encabezado
+        // ]);
         return $pdf->download('certificate.pdf');
     }
 

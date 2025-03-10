@@ -14,7 +14,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\DeleteAction;
-
+use Filament\Tables\Actions\ExportBulkAction as ActionsExportBulkAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Columns\Column;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use Illuminate\Support\Collection;
 
 class PatientsResource extends Resource
 {
@@ -48,31 +53,67 @@ class PatientsResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label('Nombre')->sortable(),
-                Tables\Columns\TextColumn::make('last_name')->label('Apellido')->sortable(),
-                // Tables\Columns\TextColumn::make('email')->label('Correo')->sortable(),
-                Tables\Columns\TextColumn::make('phone')->label('Teléfono')->sortable(),
-                Tables\Columns\TextColumn::make('disability')->label('Discapacidad')->sortable(),
-                Tables\Columns\TextColumn::make('status')->label('Estado')->badge()->color('success'),
+                Tables\Columns\TextColumn::make('name')->label('Nombres'),
+                Tables\Columns\TextColumn::make('last_name')->label('Apellidos'),
+                Tables\Columns\TextColumn::make('phone')->label('Contacto de Representante'),
+                Tables\Columns\TextColumn::make('disability_type')->label('Discapacidad'),
+                // Tables\Columns\TextColumn::make('status')->label('Estado')->badge()->color('success'),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->label('Editar'),
+
                 Action::make('desaprobar')
                 ->label('Desaprobar')
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
                 ->action(fn ($record) => $record->update(['status' => 'aspirante']))
                 ->requiresConfirmation()
-                ->visible(fn ($record) => $record->status === 'paciente') // Solo si es paciente
+                ->visible(fn ($record) => $record->status === 'paciente')
                 ->successNotificationTitle('El usuario ha sido desaprobado y ahora es aspirante.'),
             ])
+
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                    Tables\Actions\DeleteBulkAction::make()
+                    ->label('Eliminar'),
+
+                    ExportBulkAction::make()->exports([
+                        ExcelExport::make('Exportrar datos completos')->fromForm()
+                           ->askForFilename()
+                           ->except([
+                              'created_at', 'updated_at',
+                           ])
+                           ->withColumns([
+                            Column::make('name')->heading('Nombres'),
+                            Column::make('last_name')->heading('Apellidos'),
+                            Column::make('id_card')->heading('Cedula'),
+                            Column::make('gender')->heading('Genero'),
+                            Column::make('birth_date')->heading('Fecha de Nacimiento'),
+                            Column::make('age')->heading('Edad'),
+                            Column::make('ethnicity')->heading('Etnia'),
+                            Column::make('id_card_status')->heading('Carnet de Discapacidad'),
+                            Column::make('disability_type')->heading('Tipo de Discapacidad'),
+                            Column::make('disability_grade')->heading('Grado de Discapacidad'),
+                            Column::make('disability_level')->heading('Nivel de Discapacidad'),
+                            Column::make('diagnosis')->heading('Diagnostico'),
+                            Column::make('medical_history')->heading('Causa de Discapacidad'),
+                            Column::make('therapy_id')->heading('Terapia que Recibe'),
+                            Column::make('representative_name')->heading('Nombres de Representante'),
+                            Column::make('representative_last_name')->heading('Apellidos de Representante'),
+                            Column::make('representative_id_card')->heading('Cedula de Representante'),
+                            Column::make('phone')->heading('Celular de Representante'),
+                            Column::make('id_address')->heading('Direccion'),
+                        ]),
+                        
+                    ExcelExport::make('Exportar datos relevantes')->fromTable(),
+                    ])
+                    ->label('Exportar Datos'),
+                ])
+                ->label('Acciones Masivas'),
             ]);
     }
 

@@ -22,10 +22,14 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\FormsComponent;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Columns\Column;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class UserResource extends Resource
 {
@@ -179,8 +183,8 @@ class UserResource extends Resource
 
                 Step::make('Dirección del Aspirante')->schema([
 
-                    Forms\Components\Select::make('id_address')
-                    // ->relationship('address', 'reference')
+                    Select::make('id_address')
+                    ->label('Direccion')
                     ->options(Address::all()->mapWithKeys(function ($address) {
                         $parroquia = $address->parroquia ? $address->parroquia->parroquia : 'Parroquia no definida';
                         $street_1 = $address->street_1 ?? 'Calle principal no definida';
@@ -245,35 +249,6 @@ class UserResource extends Resource
                         return $address->id;
                     })
                     ->required(),
-
-                //    Forms\Components\TextInput::make('canton')
-                //    ->label('Cantón')
-                //    ->required()
-                //    ->maxLength(100),
-
-                //    Forms\Components\TextInput::make('parish')
-                //    ->label('Parroquia')
-                //    ->required(),
-                   
-                //    Forms\Components\TextInput::make('site')    
-                //    ->label('Sector')
-                //    ->required()
-                //    ->maxLength(100),
-
-                //    Forms\Components\TextInput::make('street_1')
-                //    ->label('Calle Principal')
-                //    ->required()
-                //    ->maxLength(100),
-
-                //    Forms\Components\TextInput::make('street_2')
-                //    ->label('Calle Secundaria')
-                //    ->nullable()
-                //    ->maxLength(100),
-
-                //    Forms\Components\TextInput::make('reference')
-                //    ->label('Referencia')
-                //    ->nullable()
-                //    ->maxLength(100),
                 ]),
 
                 Step::make('Creacion cuenta de Aspirante (Dejar en blanco la contraseña )')->schema([
@@ -370,9 +345,46 @@ class UserResource extends Resource
                 ->successNotificationTitle('El usuario ha sido aprobado como paciente'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                BulkActionGroup::make([
+                  DeleteBulkAction::make(),
                 ]),
+
+                ExportBulkAction::make()->exports([
+                    ExcelExport::make('Exportrar datos completos')->fromForm()
+                       ->withFilename('Usuario_'.date('Y-m-d') . '_export')
+                       ->except([
+                          'created_at', 'updated_at',
+                       ])
+                       ->withColumns([
+                        Column::make('name')->heading('Nombres'),
+                        Column::make('last_name')->heading('Apellidos'),
+                        Column::make('id_card')->heading('Cedula'),
+                        Column::make('gender')->heading('Genero'),
+                        Column::make('birth_date')->heading('Fecha de Nacimiento'),
+                        Column::make('age')->heading('Edad'),
+                        Column::make('ethnicity')->heading('Etnia'),
+                        Column::make('id_card_status')->heading('Carnet de Discapacidad'),
+                        Column::make('disability_type')->heading('Tipo de Discapacidad'),
+                        Column::make('disability_grade')->heading('Grado de Discapacidad'),
+                        Column::make('disability_level')->heading('Nivel de Discapacidad'),
+                        Column::make('diagnosis')->heading('Diagnostico'),
+                        Column::make('medical_history')->heading('Causa de Discapacidad'),
+                        Column::make('therapy_id')->heading('Terapia que Recibe'),
+                        Column::make('representative_name')->heading('Nombres de Representante'),
+                        Column::make('representative_last_name')->heading('Apellidos de Representante'),
+                        Column::make('representative_id_card')->heading('Cedula de Representante'),
+                        Column::make('id_card')->heading('Cedula'),
+                        Column::make('id_card')->heading('Cedula'),
+                        Column::make('id_card')->heading('Cedula'),
+                        Column::make('id_card')->heading('Cedula'),
+                        Column::make('id_card')->heading('Cedula'),
+                        Column::make('id_card')->heading('Cedula'),
+                        Column::make('id_card')->heading('Cedula'),
+
+                    ]),
+                    ExcelExport::make('Exportar datos relevantes')->fromTable(),
+                ])   
+
             ]);
     }
 
@@ -427,10 +439,7 @@ class UserResource extends Resource
                 'id_parroquia' => $data['id_parroquia'],
                 'calle_principal' => $data['calle_principal'],
                 'calle_secundaria' => $data['calle_secundaria'],
-                'numero' => $data['numero'],
                 'referencia' => $data['referencia'],
-                'codigo_postal' => $data['codigo_postal'],
-                'tipo_direccion' => $data['tipo_direccion'],
             ]);
 
             $user->id_address = $address->id;
