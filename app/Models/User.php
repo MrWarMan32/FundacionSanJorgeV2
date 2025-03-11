@@ -16,6 +16,9 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    
+    protected $guarded = []; //ELIMINAR DESPUES DE IMPORTAR SI LA VEZ ELIMINALAAAA
+
     /**
      * The attributes that are mass assignable.
      *
@@ -49,13 +52,7 @@ class User extends Authenticatable
         'id_card_status',
         'disability_grade',
         'diagnosis',
-        'medical_history', 
-        // 'canton',
-        // 'parish',
-        // 'site',
-        // 'street_1',
-        // 'street_2',
-        // 'reference',
+        'medical_history',
         'email_verified_at',
         'therapy_id',
         'id_address',
@@ -66,10 +63,22 @@ class User extends Authenticatable
     protected static function booted()
     {
         static::deleting(function (User $user) {
-            if ($user->address) {
+            if ($user->id_address) {
+                $addressId = $user->id_address;
+    
+                // Contar cuántos usuarios tienen la misma id_address
+                $addressCount = User::where('id_address', $addressId)->count();
+    
+                if ($addressCount === 1) {
+                    // Solo este usuario tiene la dirección, entonces la eliminamos
+                    $address = Address::find($addressId);
+                    if ($address) {
+                        $address->delete();
+                    }
+                }
+                // Eliminamos la relacion del usuario con la direccion.
                 $user->id_address = null;
                 $user->save();
-                $user->address->delete();
             }
         });
     }

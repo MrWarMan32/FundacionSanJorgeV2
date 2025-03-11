@@ -28,7 +28,7 @@ class Appointment extends Model
 
     public function patient()
     {
-        return $this->belongsTo(User::class, 'patient_id');
+        return $this->hasOne(User::class, 'patient_id');
     }
 
     public function shift()

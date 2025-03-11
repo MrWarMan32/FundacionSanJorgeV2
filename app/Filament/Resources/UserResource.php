@@ -3,33 +3,28 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\Address;
 use App\Models\User;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\DeleteAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Wizard\Step;
-use Filament\Forms\FormsComponent;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteBulkAction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Columns\Column;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use Filament\Forms\Components\DatePicker;
 
 class UserResource extends Resource
 {
@@ -59,7 +54,8 @@ class UserResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form->schema([
+        return $form
+        ->schema([
 
             Wizard::make()
             ->columnSpan('full')
@@ -92,17 +88,35 @@ class UserResource extends Resource
 
                     Forms\Components\DatePicker::make('birth_date')
                     ->label('Fecha de Nacimiento')
-                    ->nullable(),
+                    ->nullable()
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        if ($state) {
+                            $birthDate = Carbon::parse($state);
+                            $age = floor($birthDate->diffInYears(Carbon::now())); // Redondear hacia abajo
+
+                            $set('age', $age);
+                        } else {
+                            $set('age', null);
+                        }
+                    }),
 
                     Forms\Components\TextInput::make('age')
                     ->label('Edad')
                     ->nullable()
                     ->numeric(),
+                    // ->disabled(),
 
-                    Forms\Components\TextInput::make('ethnicity')
+                    Forms\Components\Select::make('ethnicity')
                     ->label('Etnia')
-                    ->nullable()
-                    ->maxLength(100),
+                    ->options([
+                        'mestizo' => 'Mestizo/a',
+                        'indigena' => 'Indígena',
+                        'afroecuatoriano' => 'Afroecuatoriano/a',
+                        'blanco' => 'Blanco/a',
+                        'montubio' => 'Montubio/a',
+                        'otro' => 'Otro',
+                    ])
+                    ->nullable(),
    
 
                    Forms\Components\Select::make('status')
@@ -154,7 +168,7 @@ class UserResource extends Resource
                    ->nullable(),
 
                    Forms\Components\TextArea::make('medical_history')
-                   ->label('Historial Médico')
+                   ->label('Causa de Discapacidad')
                    ->nullable(),
                 ]),
 
@@ -185,6 +199,7 @@ class UserResource extends Resource
 
                     Select::make('id_address')
                     ->label('Direccion')
+                    ->nullable()
                     ->options(Address::all()->mapWithKeys(function ($address) {
                         $parroquia = $address->parroquia ? $address->parroquia->parroquia : 'Parroquia no definida';
                         $street_1 = $address->street_1 ?? 'Calle principal no definida';
@@ -255,15 +270,17 @@ class UserResource extends Resource
                     Forms\Components\TextInput::make('email')
                     ->email()
                     ->label('Correo Electrónico')
-                    ->placeholder('nombre.apellido@gmail.com')
+                    ->placeholder('nombre.apellido+4 primeros digitos de la cedula@gmail.com')
                     ->helperText('Se recomienda utilizar este formato en caso de no poseer correo')
                     ->required()
+                    ->nullable()
                     ->maxLength(100)
                     ->unique(ignoreRecord: true),
 
                     Forms\Components\TextInput::make('password')
                     ->password()
                     ->label('Contraseña')
+                    ->helperText('DEJAR EN BLANCO')
                     ->nullable()
                     ->dehydrated(fn ($state) => filled($state)) // Guarda solo si se cambia
                     ->maxLength(255),
@@ -345,46 +362,44 @@ class UserResource extends Resource
                 ->successNotificationTitle('El usuario ha sido aprobado como paciente'),
             ])
             ->bulkActions([
-                BulkActionGroup::make([
-                  DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make()
+                    ->label('Eliminar'),
 
-                ExportBulkAction::make()->exports([
-                    ExcelExport::make('Exportrar datos completos')->fromForm()
-                       ->withFilename('Usuario_'.date('Y-m-d') . '_export')
-                       ->except([
-                          'created_at', 'updated_at',
-                       ])
-                       ->withColumns([
-                        Column::make('name')->heading('Nombres'),
-                        Column::make('last_name')->heading('Apellidos'),
-                        Column::make('id_card')->heading('Cedula'),
-                        Column::make('gender')->heading('Genero'),
-                        Column::make('birth_date')->heading('Fecha de Nacimiento'),
-                        Column::make('age')->heading('Edad'),
-                        Column::make('ethnicity')->heading('Etnia'),
-                        Column::make('id_card_status')->heading('Carnet de Discapacidad'),
-                        Column::make('disability_type')->heading('Tipo de Discapacidad'),
-                        Column::make('disability_grade')->heading('Grado de Discapacidad'),
-                        Column::make('disability_level')->heading('Nivel de Discapacidad'),
-                        Column::make('diagnosis')->heading('Diagnostico'),
-                        Column::make('medical_history')->heading('Causa de Discapacidad'),
-                        Column::make('therapy_id')->heading('Terapia que Recibe'),
-                        Column::make('representative_name')->heading('Nombres de Representante'),
-                        Column::make('representative_last_name')->heading('Apellidos de Representante'),
-                        Column::make('representative_id_card')->heading('Cedula de Representante'),
-                        Column::make('id_card')->heading('Cedula'),
-                        Column::make('id_card')->heading('Cedula'),
-                        Column::make('id_card')->heading('Cedula'),
-                        Column::make('id_card')->heading('Cedula'),
-                        Column::make('id_card')->heading('Cedula'),
-                        Column::make('id_card')->heading('Cedula'),
-                        Column::make('id_card')->heading('Cedula'),
-
-                    ]),
-                    ExcelExport::make('Exportar datos relevantes')->fromTable(),
-                ])   
-
+                    ExportBulkAction::make()->exports([
+                        ExcelExport::make('Exportrar datos completos')->fromForm()
+                           ->askForFilename()
+                           ->except([
+                              'created_at', 'updated_at',
+                           ])
+                           ->withColumns([
+                            Column::make('name')->heading('Nombres'),
+                            Column::make('last_name')->heading('Apellidos'),
+                            Column::make('id_card')->heading('Cedula'),
+                            Column::make('gender')->heading('Genero'),
+                            Column::make('birth_date')->heading('Fecha de Nacimiento'),
+                            Column::make('age')->heading('Edad'),
+                            Column::make('ethnicity')->heading('Etnia'),
+                            Column::make('id_card_status')->heading('Carnet de Discapacidad'),
+                            Column::make('disability_type')->heading('Tipo de Discapacidad'),
+                            Column::make('disability_grade')->heading('Grado de Discapacidad'),
+                            Column::make('disability_level')->heading('Nivel de Discapacidad'),
+                            Column::make('diagnosis')->heading('Diagnostico'),
+                            Column::make('medical_history')->heading('Causa de Discapacidad'),
+                            Column::make('therapy_id')->heading('Terapia que Recibe'),
+                            Column::make('representative_name')->heading('Nombres de Representante'),
+                            Column::make('representative_last_name')->heading('Apellidos de Representante'),
+                            Column::make('representative_id_card')->heading('Cedula de Representante'),
+                            Column::make('phone')->heading('Celular de Representante'),
+                            Column::make('id_address')->heading('Direccion'),
+                        ]),
+                        
+                        ExcelExport::make('Exportar datos relevantes')->fromTable()
+                        ->askForFilename()
+                    ])
+                    ->label('Exportar Datos'),
+                ])
+                ->label('Acciones Masivas'),
             ]);
     }
 
@@ -437,9 +452,9 @@ class UserResource extends Resource
                 'id_provincia' => $data['id_provincia'],
                 'id_canton' => $data['id_canton'],
                 'id_parroquia' => $data['id_parroquia'],
-                'calle_principal' => $data['calle_principal'],
-                'calle_secundaria' => $data['calle_secundaria'],
-                'referencia' => $data['referencia'],
+                'street_1' => $data['street_1'],
+                'street_2' => $data['street_2'],
+                'reference' => $data['referencia'],
             ]);
 
             $user->id_address = $address->id;
