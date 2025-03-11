@@ -170,8 +170,8 @@ class UserResource extends Resource
                    Forms\Components\TextArea::make('medical_history')
                    ->label('Causa de Discapacidad')
                    ->nullable(),
-                ]),
-
+                   ]),
+               
                 Step::make('Informacion Representante')->schema([
                     Forms\Components\TextInput::make('representative_name')
                     ->label('Nombre')
@@ -235,6 +235,11 @@ class UserResource extends Resource
                             return DB::table('parroquia')->where('id_canton', $get('id_canton'))->pluck('parroquia', 'id');
                         })
                         ->reactive(),
+
+                        TextInput::make('site')
+                        ->label('Lugar')
+                        ->required()
+                        ->maxLength(100),
 
                         TextInput::make('street_1')
                         ->label('Calle Principal')

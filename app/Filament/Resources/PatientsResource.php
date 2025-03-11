@@ -94,7 +94,7 @@ class PatientsResource extends Resource
                        'aspirante' => 'Aspirante',
                        'paciente' => 'Paciente',
                    ])
-                   ->default('aspirante')
+                   ->default('paciente')
                    ->required()
                    ->hidden(),
 
@@ -203,6 +203,11 @@ class PatientsResource extends Resource
                             return DB::table('parroquia')->where('id_canton', $get('id_canton'))->pluck('parroquia', 'id');
                         })
                         ->reactive(),
+
+                        TextInput::make('site')
+                        ->label('Lugar')
+                        ->required()
+                        ->maxLength(100),
 
                         TextInput::make('street_1')
                         ->label('Calle Principal')

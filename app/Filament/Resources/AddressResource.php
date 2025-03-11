@@ -35,6 +35,11 @@ class AddressResource extends Resource
     {
         return $table
             ->columns([
+
+                Tables\Columns\TextColumn::make('user.name')
+                ->label('Usuario')
+                ->searchable(),
+
                 Tables\Columns\TextColumn::make('canton.canton')
                 ->label('Canton')
                 ->searchable(),
@@ -42,8 +47,8 @@ class AddressResource extends Resource
                 Tables\Columns\TextColumn::make('parroquia.parroquia')
                 ->label('Parroquia')
                 ->searchable(),
-                Tables\Columns\TextColumn::make('reference')
-                ->label('Referencia')
+                Tables\Columns\TextColumn::make('site')
+                ->label('Lugar')
                 ->searchable(),
             ])
             ->filters([
@@ -54,7 +59,7 @@ class AddressResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    //Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make(),
                 ])
             ->label('Acciones Masivas'),
             ]);

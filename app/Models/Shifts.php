@@ -68,5 +68,17 @@ class Shifts extends Model
                 }
             }
         });
+
+        static::deleting(function (Shifts $shift) {
+            // Buscar el horario en appointments usando el id almacenado en la cita
+            $appointment = Appointment::find($shift->appointment_id);
+    
+            if ($appointment) {
+                // Desasociar el paciente y marcar el horario como disponible
+                $appointment->patient_id = null;
+                $appointment->available = 1;
+                $appointment->save();
+            }
+        });
     }
 }

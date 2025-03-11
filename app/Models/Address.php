@@ -14,6 +14,7 @@ class Address extends Model
         'id_provincia',
         'id_canton',
         'id_parroquia',
+        'site',
         'street_1',
         'street_2',
         'reference',

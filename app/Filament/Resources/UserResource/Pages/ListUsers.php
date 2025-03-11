@@ -16,9 +16,6 @@ class ListUsers extends ListRecords
         return [
             Actions\CreateAction::make()
             ->label('Nuevo Aspirante'),
-
-            // ExcelImportAction::make()
-            //     ->color("primary"),
         ];
     }
 }
