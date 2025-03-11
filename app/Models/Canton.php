@@ -11,6 +11,7 @@ class Canton extends Model
 {
     use HasFactory;
 
+    protected $table = 'canton';
     protected $fillable = ['canton', 'id_provincia'];
 
     public function provincia(): BelongsTo

@@ -60,8 +60,7 @@ class Shifts extends Model
                     $record->start_time = $appointment->start_time;
                     $record->end_time = $appointment->end_time;
                     $record->save();  // Guardamos el shift actualizado
-
-                    // // Puedes usar dd() para depurar el flujo de ejecución
+                    
                     // dd('Shift actualizado y Appointment modificado', [
                     //     'shift_id' => $record->id,
                     //     'appointment_id' => $appointment->id,

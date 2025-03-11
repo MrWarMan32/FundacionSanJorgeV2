@@ -62,6 +62,18 @@ class User extends Authenticatable
     //eliminar usuario y direccion asociada
     protected static function booted()
     {
+        // Evento cuando se crea un usuario
+        static::created(function ($user) {
+            // Verificar si hay una dirección asignada al usuario
+            if ($user->id_address) {
+                // Asignar la dirección al usuario
+                $address = Address::find($user->id_address);
+                if ($address) {
+                    $address->update(['user_id' => $user->id]);
+                }
+            }
+        });
+
         static::deleting(function (User $user) {
             if ($user->id_address) {
                 $addressId = $user->id_address;
@@ -82,6 +94,7 @@ class User extends Authenticatable
             }
         });
     }
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -133,9 +146,9 @@ class User extends Authenticatable
     } 
 
     //relacion tabla addresses
-    public function address(): BelongsTo
+    public function address()
     {
-        return $this->belongsTo(Address::class, 'id_address');
+        return $this->hasMany(Address::class, 'id', 'id_address');
     }
 
 }

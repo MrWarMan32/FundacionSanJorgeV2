@@ -157,28 +157,23 @@ class ShiftsResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('patient.name')
                     ->label('Paciente')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('doctor.name')
                     ->label('Doctor')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('therapy.therapy_type')
                     ->label('Terapia')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('start_time')
                     ->label('Inicio de la cita')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('end_time')
                     ->label('Fin de la cita')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
             ])
             ->filters([
                 //

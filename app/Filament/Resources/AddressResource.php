@@ -35,7 +35,16 @@ class AddressResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('canton.canton')
+                ->label('Canton')
+                ->searchable(),
+
+                Tables\Columns\TextColumn::make('parroquia.parroquia')
+                ->label('Parroquia')
+                ->searchable(),
+                Tables\Columns\TextColumn::make('reference')
+                ->label('Referencia')
+                ->searchable(),
             ])
             ->filters([
                 //
@@ -45,9 +54,11 @@ class AddressResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                    //Tables\Actions\DeleteBulkAction::make(),
+                ])
+            ->label('Acciones Masivas'),
             ]);
+            
     }
 
     public static function getRelations(): array
