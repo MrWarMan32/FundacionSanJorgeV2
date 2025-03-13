@@ -13,6 +13,7 @@ class Shifts extends Model
         'patient_id',
         'doctor_id',
         'therapy_id',
+        'date',
         'status',
         'notes',
         'appointment_id',

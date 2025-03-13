@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Shifts;
+use App\Models\User;
 
 class CertificateController extends Controller
 {
@@ -40,5 +41,29 @@ class CertificateController extends Controller
             'end_time' => $shift->appointment->end_time,
             'appointment_day' => $shift->appointment->day,
         ];
+    }
+
+    
+    public function generateCertificate2($patientId)
+    {
+    // Obtener todas las citas del paciente
+    $shift = Shifts::where('patient_id', $patientId)
+                   ->with('appointment') // Cargar relación con appointments
+                   ->get();
+
+    // Obtener los datos del paciente
+    $patient = User::find($patientId);
+
+    // Preparar los datos para el certificado
+    $data = [
+        'patient' => $patient,
+        'shifts' => $shift
+    ];
+
+    // Generar el PDF
+    $pdf = PDF::loadView('certificates.certificate2', $data);
+
+    // Descargar el certificado
+    return $pdf->download('certificado_' . $patient->first_name . '_' . $patient->last_name . '.pdf');
     }
 }

@@ -32,6 +32,16 @@ class PatientsResource extends Resource
     protected static ?int $navigationSort = 3;
     protected static ?string $navigationIcon = 'heroicon-o-user';
 
+    // FILTRAR SOLO PACIENTES
+    public static function getEloquentQuery(): Builder
+    {
+       
+       return parent::getEloquentQuery()
+       ->whereNotIn('status', ['aspirante'])
+       ->whereNotIn('user_type', ['admin'])
+       ->whereNotIn('user_type', ['doctor']);
+    }
+
 
     public static function form(Form $form): Form
     {
@@ -284,15 +294,7 @@ class PatientsResource extends Resource
             ]);
     }
 
-     // FILTRAR SOLO PACIENTES
-     public static function getEloquentQuery(): Builder
-     {
-        
-        return parent::getEloquentQuery()
-        ->whereNotIn('status', ['aspirante'])
-        ->whereNotIn('user_type', ['admin'])
-        ->whereNotIn('user_type', ['doctor']);
-     }
+     
 
     public static function table(Table $table): Table
     {

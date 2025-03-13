@@ -312,7 +312,6 @@ class UserResource extends Resource
                     ->readonly()
                     ->hidden(),
 
- 
                  ])
             ]),
         ]);

@@ -35,7 +35,7 @@
         }
         .header-text .title {
             margin-top: 20px;
-            font-size: 22px;
+            font-size: 16px;
             font-weight: bold;
         }
         .header-text .subtitle {
@@ -82,7 +82,7 @@
 
         <!-- Contenido del Certificado -->
         <div class="content">
-            <p><strong>La FUNDACIÓN DE AYUDA MUTUA SAN JORGE</strong>, comprometida con el bienestar 
+            <p>La<strong> FUNDACIÓN DE AYUDA MUTUA SAN JORGE</strong>, comprometida con el bienestar 
                 y desarrollo integral de sus pacientes, extiende el presente certificado a:</p>
             
             <p style="text-align: center; font-size: 20px; font-weight: bold;">
@@ -91,8 +91,8 @@
 
             <p>Portador/a de la cédula de identidad No. <strong>{{ $shift['patient_id'] }}</strong>
                en el cual certifica que el/la paciente ha asistido y completado satisfactoriamente sus sesiones de
-               <strong>{{ ucwords(strtolower($shift['therapy_type'])) }}</strong> en esta institución, bajo la supervisión de el/la terapeuta
-               <strong>{{ ucwords(strtolower($shift['doctor_name'])) }} {{ ucwords(strtolower($shift['doctor_last_name'])) }}</strong>
+               <strong>{{ mb_convert_case(strtolower($shift['therapy_type']), MB_CASE_TITLE, "UTF-8") }}</strong> en esta institución, bajo la supervisión de el/la terapeuta
+<strong>{{ mb_convert_case(strtolower($shift['doctor_name']), MB_CASE_TITLE, "UTF-8") }} {{ mb_convert_case(strtolower($shift['doctor_last_name']), MB_CASE_TITLE, "UTF-8") }}</strong>
             </p>
 
             <p>Dichas sesiones se realizaron en horario de {{ \Carbon\Carbon::parse($shift['start_time'])->format('h:i A') }} a 

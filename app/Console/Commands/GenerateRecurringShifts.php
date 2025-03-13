@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Appointment;
 use Illuminate\Console\Command;
 use App\Models\Shifts;
 use Carbon\Carbon;
@@ -43,13 +44,45 @@ class GenerateRecurringShifts extends Command
 
     public function createRecurringShift($shift)
     {
-        $newShift = $shift->replicate(); // Clona la cita original
-        $newShift->parent_shift_id = $shift->id; // Relaciona con la cita original
-        $newShift->start_time = Carbon::parse($shift->start_time)->addWeek(); // Mueve la cita una semana adelante
-        $newShift->end_time = Carbon::parse($shift->end_time)->addWeek();
-        $newShift->created_at = now();
-        $newShift->updated_at = now();
-        $newShift->save();
+        // Clonar la cita original
+        $newShift = $shift->replicate();
+        
+        // Relacionar con la cita original
+        $newShift->parent_shift_id = $shift->id;
+
+        // Calcular la nueva fecha (una semana después)
+        $newDate = Carbon::parse($shift->date)->addWeek(); // Añadir una semana a la fecha original 
+
+        // Verificar si ese día tiene disponibilidad
+        $availableAppointments = Appointment::where('day', $newDate->locale('es')->isoFormat('dddd'))
+            ->where('available', 1)
+            ->where('doctor_id', $shift->doctor_id)
+            ->where('therapy_id', $shift->therapy_id)
+            ->first();
+
+        if ($availableAppointments) {
+            // Si hay disponibilidad, asignar la nueva fecha y hora
+            $newShift->date = $newDate->toDateString();
+
+            $newShift->start_time = $shift->start_time;
+            $newShift->end_time = $shift->end_time;
+
+            $newShift->created_at = now();
+            $newShift->updated_at = now();
+
+            // Guardar la nueva cita
+            $newShift->save();
+            
+        } else {
+            $this->warn("No hay disponibilidad para el día " . $newDate->toDateString() . " para la terapia y doctor especificados.");
+        }
+        // $newShift = $shift->replicate(); // Clona la cita original
+        // $newShift->parent_shift_id = $shift->id; // Relaciona con la cita original
+        // $newShift->start_time = Carbon::parse($shift->start_time)->addWeek(); // Mueve la cita una semana adelante
+        // $newShift->end_time = Carbon::parse($shift->end_time)->addWeek();
+        // $newShift->created_at = now();
+        // $newShift->updated_at = now();
+        // $newShift->save();
     }
 
 }

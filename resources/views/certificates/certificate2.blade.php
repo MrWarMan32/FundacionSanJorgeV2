@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Certificacion</title>
+    <meta charset="UTF-8">
+    <title>Certificación de Terapias</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -10,132 +11,116 @@
             background-color: #fff;
         }
         .container {
-            width: 100%;
-            height: 100%;
-            margin: 0px;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: none;
-            border-radius: 8px;
-            box-sizing: border-box;
+            width: 90%;
+            margin: 0 auto;
+            padding: 40px;
+            border: 2px solid #000;
+            border-radius: 10px;
+            text-align: center;
         }
         .header {
-            /* width: 100%;
-            position: relative;
-            margin-bottom: 20px; */
-            width: 100%;
-            position: fixed; /* Cambia 'relative' a 'fixed' */
-            top: 0; /* Coloca el encabezado en la parte superior de la página */
-            left: 0; /* Asegura que el encabezado ocupe todo el ancho */
-            background-color: #fff; /* Opcional: añade un fondo blanco para mayor claridad */
-            z-index: 1000; /* Asegura que el encabezado esté encima de otros elementos */
-            padding: 10px 0; /* Opcional: añade un poco de padding */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
         }
-        .left-text {
-            position: absolute;
-            top: 60px;
-            right: 10px;
-            text-align: right;
-            /* font-style: italic; */
-            font-family: 'lucida-calligraphy';
-            font-size: 12px;
+        .header img {
+            width: 150px;
+            margin-right: 20px;
+            margin-top: -20px;
         }
-        .center-text {
+        .header-text {
             text-align: center;
-            padding: 10px;
-            width: 100%;
-            font-size: 20px;
+            flex-grow: 1;
         }
-        .right-image {
-            position: absolute;
-            top: 0px;
-            left: 10px;
-            width: 110px;
+        .header-text .title {
+            margin-top: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .header-text .subtitle {
+            font-size: 14px;
+            font-style: italic;
+            margin-top: 5px;
+            text-align: center;
         }
         .content {
-            margin-top: 120px;
-            font-size: 18px;
+            margin-top: 40px;
+            font-size: 14px;
+            text-align: justify;
             line-height: 1.6;
         }
-        .content p {
-            margin: 10px 0;
-        }
-
         .signature {
-            margin-top: 50px;
-            text-align: right;
-            font-size: 18px;
-
-            position: absolute; /* Fija la posición de .signature */
-            bottom: 50px; /* Coloca .signature a 20px del fondo */
-            /* text-align: center; Centra el texto dentro de .signature */
-            width: 100%; /* Ocupa todo el ancho disponible */
+            margin-top: 90px;
+            text-align: left;
+            font-size: 14px;
         }
-
         .signature p {
-            margin: 0;
+            margin: 5px 0;
         }
-
-
-        .signature {
-        margin-top: 50px;
-        text-align: right;
-        font-size: 18px;
-        width: 400px; /* Ajusta el ancho según sea necesario */
-        display: inline-block; /* O display: flex; si prefieres flexbox */
-    }
-    .signature p {
-        margin: 0;
-        text-align: left; /* Alinea el texto a la izquierda dentro de cada párrafo */
-    }
-
-    .signature .name {
-        font-weight: bold;
-        text-align: left;
-    }
-
-    .footer {
-        position: absolute;
-        text-align: center;
-        margin-top: 40px;
-        font-size: 16px;
-        color: #777;
-        left: 50%; /* Centra .signature horizontalmente */
-        transform: translateX(-50%);
-        width: 100%;
-    }
-
+        .signature .name {
+            font-weight: bold;
+            text-decoration: underline;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 14px;
+            color: #555;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Encabezado -->
         <div class="header">
-            <div class="left-text">
-                Soy un ser especial<br>
-                Dios no comete errores<br>
-                Él me ama así
+            <img src="{{ public_path('images/Logo_Fundacion.png') }}" alt="Logo Fundación">
+            <div class="header-text">
+                <div class="title">FUNDACIÓN DE AYUDA MUTUA SAN JORGE</div>
+                <div class="subtitle">"Soy un ser especial, Dios no comete errores, Él me ama así"</div>
             </div>
-            <div class="center-text">
-                <strong>FUNDACION DE AYUDA MUTUA SAN JORGE</strong></p>
-            </div>
-            <img src="{{ public_path('images/Logo_Fundacion.png') }}" alt="Imagen" class="right-image">
-        </div>
-        <div class="content">
-            <p>Por medio del presente, se certifica que <strong>{{ $shift['patient_name'] }}</strong>, identificado con [Número de Identificación], ha asistido a sesiones de terapia en <strong>[Nombre de la Institución/Centro de Terapia]</strong>.</p>
-            <p><strong>Tipo de Terapia:</strong> {{ $shift['therapy_type'] }}</p>
-            <p><strong>Terapeuta a Cargo:</strong> {{ $shift['doctor_name'] }}</p>
-            <p><strong>Período de Asistencia:</strong> Desde {{ $shift['start_time'] }} hasta {{ $shift['end_time'] }}</p>
-            <p>Este certificado se expide a petición del interesado para los fines que estime convenientes.</p>
-        </div>
-        <div class="signature">
-            <p> Ing. Gabriela Briones Giler </p>
-            <p><strong>COORDINADORA GENERAL</strong></p>
-            <p><strong>FUNDACIÓN DE AYUDA MUTUA SAN JORGE</strong></p>
         </div>
 
-        <div class="footer">
-            <p>famsanjorge@hotmail.com</p>
+        <!-- Contenido del Certificado -->
+        <div class="content">
+            <p>La<strong> FUNDACIÓN DE AYUDA MUTUA SAN JORGE</strong>, comprometida con el bienestar 
+                y desarrollo integral de sus pacientes, extiende el presente certificado a:</p>
+            
+            <p style="text-align: center; font-size: 18px; font-weight: bold;">
+                {{ $patient->name }} {{ $patient->last_name }}
+            </p>
+
+            <p>Portador/a de la cédula de identidad No. <strong>{{ $patient->id_card }}</strong>
+               en el cual certifica que el/la paciente asiste y recibe las siguientes terapias en nuestra fundación:
+
+                <p>
+                    @foreach ($shifts as $shift)
+                        <strong>{{ ucwords(strtolower( $shift->therapy->therapy_type)) }}</strong> 
+                        , bajo la supervisión de el/la terapeuta <strong>{{ mb_convert_case(strtolower($shift->doctor->name), MB_CASE_TITLE, "UTF-8") }} {{ mb_convert_case(strtolower($shift->doctor->last_name), MB_CASE_TITLE, "UTF-8") }}</strong>
+                        los días {{ ($shift->appointment->day) }} de 
+                        {{ \Carbon\Carbon::parse($shift->appointment->start_time)->format('h:i A') }} a {{ \Carbon\Carbon::parse($shift->appointment->end_time)->format('h:i A') }}.<br><br>
+                    @endforeach
+                </p>
+            </p>
+
+            <p>Es todo cuanto puedo certificar en honor a la verdad para los fines consiguientes.</p>
+            
+            <p>Este certificado se expide a petición del/de la interesado/a, para los fines que estime convenientes.</p>
+
+            <p>Portoviejo, {{ \Carbon\Carbon::now()->locale('es')->isoFormat('D [de] MMMM [de] YYYY') }}</p>
+
+
+
+            <p>Atentamente,</p>
         </div>
-    </div>
+
+        
+
+        <div class="signature">
+            <p>Ing. Gabriela Briones Giler</p>
+            <p>COORDINADORA GENERAL</p>
+            <p>FUNDACIÓN DE AYUDA MUTUA SAN JORGE</p>
+        </div>
+    </div> 
 </body>
 </html>

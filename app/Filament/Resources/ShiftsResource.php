@@ -65,6 +65,11 @@ class ShiftsResource extends Resource
                     ->reactive()
                     ->required(),
 
+                Forms\Components\DatePicker::make('date')
+                ->label('Fecha de la cita')
+                ->default(now())
+                ->required(),
+
                 // Selección de día
                 Select::make('day')
                 ->label('Día Disponible')
@@ -188,11 +193,6 @@ class ShiftsResource extends Resource
                 $appointment->available = false;
                 $appointment->patient_id = $record->patient_id;
                 $appointment->save();
-                
-                // // Asignar `start_time` y `end_time` desde `appointments` a `shifts`
-                // $record->start_time = $appointment->start_time;
-                // $record->end_time = $appointment->end_time;
-                // $record->save();
                 
                 dd('shift actualizado', ['shift_id' => $record->id]);
             }

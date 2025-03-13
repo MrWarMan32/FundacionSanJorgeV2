@@ -10,3 +10,7 @@ Route::get('/', function () {
 
 Route::get('/certificates/{id}', [CertificateController::class, 'generateCertificate'])->name('certificates.generate');
 
+
+Route::get('/generate-certificate/{patientId}', [CertificateController::class, 'generateCertificate2'])->name('certificates.generate2');
+
+
