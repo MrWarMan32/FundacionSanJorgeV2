@@ -10,29 +10,35 @@ class CertificateController extends Controller
 {
     public function generateCertificate($id)
     {
-        $shifts = $this->getDataForPdf($id);
+        $shift = $this->getDataForPdf($id);
 
-        $pdf = Pdf::loadView('certificates.certificate', ['shift' => $shifts]);
-        // ->setOptions([
-        //     'defaultFont' => 'sans-serif',
-        //     'isHtml5ParserEnabled' => true,
-        //     'isRemoteEnabled' => true,
-        //     'header-html' => view('certificates.encabezado')->render(), // Agregamos el encabezado
-        // ]);
-        return $pdf->download('certificate.pdf');
+        $pdf = Pdf::loadView('certificates.certificate', ['shift' => $shift]);
+       
+        $patientName = str_replace(' ', '_', $shift['patient_name']);
+        $patientLastName = str_replace(' ', '_', $shift['patient_last_name']);
+        $patientId = $shift['patient_id']; 
+        $fileName = "Certificado_{$patientName}_{$patientLastName}_{$patientId}.pdf";
+
+        return $pdf->download($fileName);  
+        // return $pdf->download('certificate.pdf');
     }
 
     protected function getDataForPdf($shiftId)
     {
         // Obtén los datos necesarios para el PDF
-        $shifts = Shifts::with(['patient', 'doctor', 'therapy'])->findOrFail($shiftId);
+        $shift = Shifts::with(['patient', 'doctor', 'therapy','appointment'])->findOrFail($shiftId);
+
 
         return [
-            'patient_name' => $shifts->patient->name,
-            'doctor_name' => $shifts->doctor->name,
-            'therapy_type' => $shifts->therapy->therapy_type,
-            'start_time' => $shifts->start_time,
-            'end_time' => $shifts->end_time,
+            'patient_id' => $shift->patient->id_card,
+            'patient_name' => $shift->patient->name,
+            'patient_last_name' => $shift->patient->last_name,
+            'doctor_name' => $shift->doctor->name,
+            'doctor_last_name' => $shift->doctor->last_name,
+            'therapy_type' => $shift->therapy->therapy_type,
+            'start_time' => $shift->appointment->start_time,
+            'end_time' => $shift->appointment->end_time,
+            'appointment_day' => $shift->appointment->day,
         ];
     }
 }

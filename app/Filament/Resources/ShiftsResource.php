@@ -112,45 +112,6 @@ class ShiftsResource extends Resource
             ]);
     }
 
-    // public static function create(Form $form): Model
-    // {
-    //     $data = $form->getState();
-
-    //     // Crear el Shift
-    //     $shift = Shifts::create([
-    //         'patient_id' => $data['patient_id'],
-    //         'appointment_id' => $data['appointment_id'],
-    //     ]);
-
-    //     // Actualizar el appointment
-    //     $appointment = Appointment::find($data['appointment_id']);
-    //     if ($appointment) {
-    //         $appointment->available = 0;
-    //         $appointment->patient_id = $data['patient_id'];
-            
-    //         $appointment->save();
-    //     }
-
-    //     return $shift;
-        // $data = $form->getState();
-
-        // // Obtener el appointment y asignar el patient_id
-        // $appointment = Appointment::find($data['appointment_id']);
-
-        
-        // $appointment->patient_id = $data['patient_id'];
-        // $appointment->available = 0;
-        // $appointment->save();
-
-        // // Crear el Shift
-        // Shifts::create([
-        //     'patient_id' => $data['patient_id'],
-        //     'appointment_id' => $data['appointment_id'],
-        // ]);
-    // }
-
-   
-
     public static function table(Table $table): Table
     {
         return $table
@@ -167,11 +128,11 @@ class ShiftsResource extends Resource
                     ->label('Terapia')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('start_time')
+                Tables\Columns\TextColumn::make('appointment.start_time')
                     ->label('Inicio de la cita')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('end_time')
+                Tables\Columns\TextColumn::make('appointment.end_time')
                     ->label('Fin de la cita')
                     ->searchable(),
             ])
@@ -228,10 +189,10 @@ class ShiftsResource extends Resource
                 $appointment->patient_id = $record->patient_id;
                 $appointment->save();
                 
-                // Asignar `start_time` y `end_time` desde `appointments` a `shifts`
-                $record->start_time = $appointment->start_time;
-                $record->end_time = $appointment->end_time;
-                $record->save();
+                // // Asignar `start_time` y `end_time` desde `appointments` a `shifts`
+                // $record->start_time = $appointment->start_time;
+                // $record->end_time = $appointment->end_time;
+                // $record->save();
                 
                 dd('shift actualizado', ['shift_id' => $record->id]);
             }

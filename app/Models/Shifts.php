@@ -56,15 +56,11 @@ class Shifts extends Model
                     $appointment->patient_id = $record->patient_id;
                     $appointment->save();  // Guardamos los cambios en la cita
                     
-                    // Asignamos las horas de inicio y fin de la cita al shift
-                    $record->start_time = $appointment->start_time;
-                    $record->end_time = $appointment->end_time;
-                    $record->save();  // Guardamos el shift actualizado
+                    // // Asignamos las horas de inicio y fin de la cita al shift
+                    // $record->start_time = $appointment->start_time;
+                    // $record->end_time = $appointment->end_time;
+                    // $record->save();  // Guardamos el shift actualizado
                     
-                    // dd('Shift actualizado y Appointment modificado', [
-                    //     'shift_id' => $record->id,
-                    //     'appointment_id' => $appointment->id,
-                    // ]);
                 }
             }
         });

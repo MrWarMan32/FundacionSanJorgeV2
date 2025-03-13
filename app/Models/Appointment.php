@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Appointment extends Model
 {
+    protected $table = 'appointments';
+    
     protected $fillable = [
         'doctor_id',
         'therapy_id',
@@ -33,6 +35,6 @@ class Appointment extends Model
 
     public function shift()
     {
-       return $this->hasOne(Shifts::class, 'appointment_id');
+       return $this->hasMany(Shifts::class, 'appointment_id');
     }
 }
