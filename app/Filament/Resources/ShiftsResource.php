@@ -2,11 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use Closure;
-use Filament\Forms\Get;
 use App\Filament\Resources\ShiftsResource\Pages;
 use App\Models\Shifts;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -15,17 +12,9 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use App\Models\User;
 use App\Models\Appointment;
-use App\Models\Doctor;
 use App\Models\Therapy;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms\Components\Textarea;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use Doctrine\DBAL\Driver\Mysqli\Initializer\Options;
-use Filament\Forms\Components\Actions\Action;
-use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\DatePicker;
 
 class ShiftsResource extends Resource
 {
@@ -65,7 +54,8 @@ class ShiftsResource extends Resource
                     ->reactive()
                     ->required(),
 
-                Forms\Components\DatePicker::make('date')
+                //seleccion de fecha para el certificado
+                DatePicker::make('date')
                 ->label('Fecha de la cita')
                 ->default(now())
                 ->required(),
@@ -94,7 +84,7 @@ class ShiftsResource extends Resource
                     ->orderBy('start_time')
                     ->get()
                 ->mapWithKeys(fn ($appointment) => [
-                $appointment->id => $appointment->start_time . ' - ' . $appointment->end_time
+                $appointment->id => $appointment->start_time . ' - ' . $appointment->end_time ////////////////////
                 ]))
                 ->searchable()
                 ->preload()
@@ -112,9 +102,11 @@ class ShiftsResource extends Resource
 
                 Toggle::make('is_emergency')
                     ->label('¿Este cambio es por emergencia?')
+                    ->visible(fn ($get) => $get('id') !== null)
                     ->helperText('Si activas esto, solo se cambiará esta cita. Si no, se modificarán todas las futuras citas recurrentes.')
                     ->default(false),
-            ]);
+                ]);
+           
     }
 
     public static function table(Table $table): Table
@@ -133,13 +125,17 @@ class ShiftsResource extends Resource
                     ->label('Terapia')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('appointment.start_time')
-                    ->label('Inicio de la cita')
+                Tables\Columns\TextColumn::make('date')
+                    ->label('Fecha')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('appointment.end_time')
-                    ->label('Fin de la cita')
-                    ->searchable(),
+                // Tables\Columns\TextColumn::make('appointment.start_time')
+                //     ->label('Inicio de la cita')
+                //     ->searchable(),
+
+                // Tables\Columns\TextColumn::make('appointment.end_time')
+                //     ->label('Fin de la cita')
+                //     ->searchable(),
             ])
             ->filters([
                 //
@@ -181,22 +177,6 @@ class ShiftsResource extends Resource
         ];
     }
 
-    public static function afterSave($record): void
-    {
-        
-        if ($record->appointment_id) {
-            $appointment = Appointment::find($record->appointment_id);
-            
-            if ($appointment && $appointment->available) {
-                
-                // Actualizar `appointments`
-                $appointment->available = false;
-                $appointment->patient_id = $record->patient_id;
-                $appointment->save();
-                
-                dd('shift actualizado', ['shift_id' => $record->id]);
-            }
-        }
-    }
+
 
 }

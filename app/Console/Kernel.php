@@ -12,12 +12,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // Programa la tarea para actualizar el estado de las citas completadas cada 20 minutos
-        $schedule->command('app:update-completed-shifts')->everyTwentyMinutes();
+        // // Programa la tarea para actualizar el estado de las citas completadas cada 20 minutos
+        // $schedule->command('app:update-completed-shifts')->everyTwentyMinutes();
 
         
-        // Programar el comando para que se ejecute semanalmente viernes a las 12:30 pm
-        $schedule->command('generate:recurring-shifts')->fridays()->at('12:30');
+        // // Programar el comando para que se ejecute semanalmente viernes a las 12:30 pm
+        // $schedule->command('generate:recurring-shifts')->fridays()->at('12:30');
 
     }
 

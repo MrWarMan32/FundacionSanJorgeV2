@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Console\Commands\GenerateRecurringShifts;
 use Illuminate\Database\Eloquent\Model;
 
 class Shifts extends Model
 {
+    protected $table = 'shifts';
+
     protected $fillable = [
-        'start_time',
-        'end_time',
         'is_recurring',
         'patient_id',
         'doctor_id',
@@ -44,6 +45,7 @@ class Shifts extends Model
 
     protected static function booted()
     {
+
         // Definimos el evento saved para ejecutar la lógica después de guardar el modelo
         static::saved(function ($record) {
             // Verificamos si appointment_id está presente en el shift
@@ -57,15 +59,11 @@ class Shifts extends Model
                     $appointment->patient_id = $record->patient_id;
                     $appointment->save();  // Guardamos los cambios en la cita
                     
-                    // // Asignamos las horas de inicio y fin de la cita al shift
-                    // $record->start_time = $appointment->start_time;
-                    // $record->end_time = $appointment->end_time;
-                    // $record->save();  // Guardamos el shift actualizado
-                    
                 }
             }
         });
 
+        //evento para la eliminacion de citas 
         static::deleting(function (Shifts $shift) {
             // Buscar el horario en appointments usando el id almacenado en la cita
             $appointment = Appointment::find($shift->appointment_id);
@@ -77,5 +75,21 @@ class Shifts extends Model
                 $appointment->save();
             }
         });
+
+
+        // //evento para la edicion de citas sin afectar la generacion semanal
+        // static::saved(function ($shift) {
+        //     // Si la cita es una emergencia, solo se actualiza la cita sin modificar las recurrentes
+        //     if ($shift->is_emergency) {
+        //         // Si es emergencia, no generamos citas recurrentes
+        //         return;
+        //     }
+
+        //     // Si no es emergencia, generamos las citas recurrentes para el cambio
+        //     (new GenerateRecurringShifts)->handle();
+        // });
+
+
+
     }
 }
