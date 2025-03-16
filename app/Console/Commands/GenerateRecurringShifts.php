@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Appointment;
+use Filament\Notifications\Notification;
 use Illuminate\Console\Command;
 use App\Models\Shifts;
 use Carbon\Carbon;
@@ -53,31 +54,58 @@ class GenerateRecurringShifts extends Command
             ->first();
 
         if (!$existingShift) {
-            // Determinar la cita original
-            $originalShift = $shift;
+            // Si la cita es una emergencia, buscamos la cita original
+            $originalShift = $shift->is_emergency ? Shifts::find($shift->parent_shift_id) : $shift;
+           
 
-            if ($shift->is_modified) {
-                if ($shift->is_emergency) {
-                    // Si es emergencia, clonar la cita antes de la modificación
-                    $originalShift = Shifts::find($shift->parent_shift_id);
-                } else {
-                    // Si no es emergencia, esta cita se convierte en la nueva base
-                    $shift->parent_shift_id = null;
-                    $shift->save();
-                }
-            }
-
+             // Si se encuentra la cita original
             if ($originalShift) {
+                // Replicamos la cita original para crear la nueva cita
                 $newShift = $originalShift->replicate();
+
+                // Establecemos el ID de la cita original como la cita principal
                 $newShift->parent_shift_id = $originalShift->id;
+
+                // Establecemos la fecha de la nueva cita como la próxima semana
                 $newShift->date = $newDate->toDateString();
+
+                // Desactivamos la opción de modificada
                 $newShift->is_modified = false;
+
+                // Marcamos que no es una emergencia
                 $newShift->is_emergency = false;
 
+                // Actualizamos las fechas de creación y actualización
                 $newShift->created_at = now();
                 $newShift->updated_at = now();
 
+                // Guardamos la nueva cita
                 $newShift->save();
+
+                $this->info("Cita recurrente generada para la fecha: " . $newDate->toDateString());
+
+
+                // Comprobamos si el lote anterior ha sido modificado
+                $previousShifts = Shifts::where('parent_shift_id', $originalShift->id)
+                ->orderBy('date', 'desc')
+                ->take(2)
+                ->get();
+
+                // Si hay dos lotes sin modificaciones, actualizamos el parent_shift_id del próximo lote
+                if ($previousShifts->count() == 2 && !$previousShifts->contains('is_modified', true)) {
+                    $lastShift = $previousShifts->first();
+                    $this->info("El lote anterior no tiene modificaciones, se convertirá en el original.");
+                    Notification::make()
+                        ->title('Citas Generadas')
+                        ->body('El lote anterior no tiene modificaciones, se convertirá en el original.')  
+                        ->success()
+                        ->persistent()
+                        ->send();
+                    $newShift->parent_shift_id = $lastShift->id;
+                    $newShift->save();
+                }
+
+
             } else {
                 $this->warn("No se encontró la cita original para la clonación.");
             }

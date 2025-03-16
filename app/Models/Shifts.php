@@ -18,6 +18,7 @@ class Shifts extends Model
         'status',
         'notes',
         'appointment_id',
+        'is_emergency',
     ];
 
     // Relación con Paciente
