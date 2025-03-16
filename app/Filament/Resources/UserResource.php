@@ -159,10 +159,6 @@ class UserResource extends Resource
                    ->nullable()
                    ->numeric(),
 
-                   Forms\Components\Toggle::make('id_card_status')
-                   ->label('Posee Carnet de Discapacidad')
-                   ->default(false),
-
                    Forms\Components\TextArea::make('diagnosis')
                    ->label('Diagnóstico')
                    ->nullable(),
@@ -170,7 +166,12 @@ class UserResource extends Resource
                    Forms\Components\TextArea::make('medical_history')
                    ->label('Causa de Discapacidad')
                    ->nullable(),
-                   ]),
+
+                   Forms\Components\Toggle::make('id_card_status')
+                   ->label('Posee Carnet de Discapacidad')
+                   ->default(false),
+
+                ]),
                
                 Step::make('Informacion Representante')->schema([
                     Forms\Components\TextInput::make('representative_name')

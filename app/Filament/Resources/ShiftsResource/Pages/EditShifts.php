@@ -14,7 +14,12 @@ class EditShifts extends EditRecord
     {
         return [
             Actions\DeleteAction::make()
-            ->label('Eliminar cita'),
+            ->label('Eliminar cita')
+            ->requiresConfirmation()
+                ->modalHeading('Eliminar Cita')
+                ->modalDescription('¿Estás seguro de que quieres eliminar esta cita? Esta acción no se puede deshacer.')
+                ->modalSubmitActionLabel('Sí, Eliminar')
+                ->modalCancelActionLabel('No, cancelar')
         ];
     }
 }

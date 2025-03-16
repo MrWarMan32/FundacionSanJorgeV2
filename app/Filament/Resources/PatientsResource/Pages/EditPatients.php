@@ -13,7 +13,12 @@ class EditPatients extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+            ->requiresConfirmation()
+                ->modalHeading('Eliminar Paciente')
+                ->modalDescription('¿Estás seguro de que quieres eliminar este paciente? Esta acción no se puede deshacer.')
+                ->modalSubmitActionLabel('Sí, Eliminar')
+                ->modalCancelActionLabel('No, cancelar')
         ];
     }
 }

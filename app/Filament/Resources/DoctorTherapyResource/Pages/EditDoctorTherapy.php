@@ -13,7 +13,12 @@ class EditDoctorTherapy extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+            ->requiresConfirmation()
+                ->modalHeading('Eliminar Terapeuta')
+                ->modalDescription('¿Estás seguro de que quieres eliminar este terapeuta? Esta acción no se puede deshacer.')
+                ->modalSubmitActionLabel('Sí, Eliminar')
+                ->modalCancelActionLabel('No, cancelar')
         ];
     }
 }

@@ -14,7 +14,12 @@ class EditUser extends EditRecord
     {
         return [
             Actions\DeleteAction::make()
-            ->label('Eliminar Aspirante'),
+            ->label('Eliminar Aspirante')
+            ->requiresConfirmation()
+                ->modalHeading('Eliminar Aspirante')
+                ->modalDescription('¿Estás seguro de que quieres eliminar este aspirante? Esta acción no se puede deshacer.')
+                ->modalSubmitActionLabel('Sí, Eliminar')
+                ->modalCancelActionLabel('No, cancelar')
         ];
     }
 }

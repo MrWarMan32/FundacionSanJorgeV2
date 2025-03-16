@@ -13,7 +13,13 @@ class EditTherapy extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+            ->label('Eliminar Terapia')
+            ->requiresConfirmation()
+                ->modalHeading('Eliminar Terapia')
+                ->modalDescription('¿Estás seguro de que quieres eliminar esta terapia? Esta acción no se puede deshacer.')
+                ->modalSubmitActionLabel('Sí, Eliminar')
+                ->modalCancelActionLabel('No, cancelar')
         ];
     }
 }
