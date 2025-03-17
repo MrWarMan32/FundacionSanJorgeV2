@@ -40,6 +40,7 @@ class CertificateController extends Controller
             'start_time' => $shift->appointment->start_time,
             'end_time' => $shift->appointment->end_time,
             'appointment_day' => $shift->appointment->day,
+            'date' => $shift->date,
         ];
     }
 

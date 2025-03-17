@@ -13,17 +13,40 @@ use Filament\Forms\Components\Toggle;
 use App\Models\User;
 use App\Models\Appointment;
 use App\Models\Therapy;
+use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\DatePicker;
+use Filament\Notifications\Notification;
+use Filament\Tables\Actions\EditAction;
+use Illuminate\Database\Eloquent\Builder;
 
 class ShiftsResource extends Resource
 {
     protected static ?string $model = Shifts::class;
-    protected static ?string $navigationLabel = 'Citas';
-    protected static ?string $pluralLabel = 'Citas';
+
+    protected static ?string $navigationLabel = 'Citas Pendientes';
+    protected static ?string $pluralLabel = 'Citas Pendientes';
+
     protected static ?string $navigationGroup = 'Gestion de Citas';
-    protected static ?int $navigationSort = 5;
+
+    protected static ?int $navigationSort = 4;
+
     protected static ?string $navigationIcon = 'heroicon-o-calendar';
+
+    //solo citas pendientes
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('status', 'Pendiente');
+    }
+
+    //contador en el menu de navegacion
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::query()
+        ->where('status', 'Pendiente')
+        ->count();
+    }
 
     public static function form(Form $form): Form
     {
@@ -129,30 +152,28 @@ class ShiftsResource extends Resource
                     ->label('Fecha')
                     ->searchable(),
 
-                // Tables\Columns\TextColumn::make('appointment.start_time')
-                //     ->label('Inicio de la cita')
-                //     ->searchable(),
-
-                // Tables\Columns\TextColumn::make('appointment.end_time')
-                //     ->label('Fin de la cita')
-                //     ->searchable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                 ->button()
                 ->extraAttributes(['class' => 'bg-indigo-600 hover:bg-indigo-700']),
 
-                Tables\Actions\Action::make('downloadPdf')
-                ->label('Crear PDF')
+                Action::make('completeShift')
+                ->label('Completar')
                 ->button()
-                ->extraAttributes(['class' => 'bg-indigo-600 hover:bg-indigo-700'])
-                ->requiresConfirmation()
-                ->url(fn ($record) => route('certificates.generate', $record->id))
-                ->openUrlInNewTab(),
-
+                ->icon('heroicon-o-check-circle')
+                ->color('success')
+                ->action(function (Shifts $record) { // Asegúrate de usar el modelo correcto
+                    $record->update(['status' => 'Completada']);
+                        Notification::make()
+                        ->success()
+                        ->title('Cita completada')
+                        ->body("La cita de {$record->patient->name} ha sido marcada como completada.")
+                        ->send();
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

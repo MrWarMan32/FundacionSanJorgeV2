@@ -18,8 +18,8 @@ class ListShifts extends ListRecords
         return [
 
             Action::make('generateRecurringShifts')
-                ->label('Generar Citas Recurrentes')
-                ->color('primary')
+                ->label('Autogenerar proximas citas')
+                ->color('info')
                 ->requiresConfirmation()
                 ->modalHeading('Confirmar generación de citas')
                 ->modalDescription('¿Estás seguro de que quieres generar las nuevas citas? Esta acción no se puede deshacer.')

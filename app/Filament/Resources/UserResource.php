@@ -32,8 +32,26 @@ class UserResource extends Resource
     protected static ?string $navigationLabel = 'Aspirantes';
     protected static ?string $pluralLabel = 'Aspirantes';
     protected static ?string $navigationGroup = 'Gestion de Usuarios';
+    
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
+
+    //contador en el menu de navegacion
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::query()
+        ->where('status', '!=', 'paciente')
+        ->where('user_type', '!=', 'doctor')
+        ->where(function (Builder $query) {
+            $query->where('user_type', '!=', 'admin')
+                  ->orWhere('status', '!=', 'paciente');
+        })
+        ->where(function (Builder $query) {
+            $query->where('user_type', '!=', 'admin')
+                  ->orWhere('status', '!=', 'aspirante');
+        })
+        ->count();
+    }
 
     //NO MOSTRAR USUARIOS PACIENTES, DOCTORES  
     public static function getEloquentQuery(): Builder
@@ -349,15 +367,16 @@ class UserResource extends Resource
                 ->label('Teléfono')
                 ->searchable(),
 
-                // Tables\Columns\TextColumn::make('status')
-                // ->label('Estado')->badge()->color('success'),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->label('Editar')
+                ->button(),
                 Action::make('aprobar')
+                ->button()
                 ->label('Aprobar')
                 ->icon('heroicon-o-check')
                 ->color('success')

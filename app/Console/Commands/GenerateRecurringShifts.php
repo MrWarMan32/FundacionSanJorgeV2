@@ -72,6 +72,9 @@ class GenerateRecurringShifts extends Command
                 // Desactivamos la opción de modificada
                 $newShift->is_modified = false;
 
+                // Pasamos la nueva cita a pendiente
+                $newShift->status = 'Pendiente';
+
                 // Marcamos que no es una emergencia
                 $newShift->is_emergency = false;
 

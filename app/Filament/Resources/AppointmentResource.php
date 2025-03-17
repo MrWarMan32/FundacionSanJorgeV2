@@ -91,14 +91,6 @@ class AppointmentResource extends Resource
                     ->sortable()
                     ->searchable()
                     ->boolean(),
-                // Tables\Columns\TextColumn::make('created_at')
-                //     ->dateTime()
-                //     ->sortable()
-                //     ->toggleable(isToggledHiddenByDefault: true),
-                // Tables\Columns\TextColumn::make('updated_at')
-                //     ->dateTime()
-                //     ->sortable()
-                //     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
             // Filtro para la terapia
@@ -110,17 +102,17 @@ class AppointmentResource extends Resource
                 2 => 'Terapia de Lenguaje',  
                 3 => 'Hipoterapia',
            ]),
-        // Filtro para el día de la semana
-        Tables\Filters\SelectFilter::make('day')
-        ->label('Filtrar por Día')
-        ->options([
-            'Lunes' => 'Lunes',
-            'Martes' => 'Martes',
-            'Miercoles' => 'Miercoles',
-            'Jueves' => 'Jueves',
-            'Viernes' => 'Viernes',
-            ]),
-          ])
+            // Filtro para el día de la semana
+            Tables\Filters\SelectFilter::make('day')
+            ->label('Filtrar por Día')
+            ->options([
+                'Lunes' => 'Lunes',
+                'Martes' => 'Martes',
+                'Miercoles' => 'Miercoles',
+                'Jueves' => 'Jueves',
+                'Viernes' => 'Viernes',
+                ]),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])

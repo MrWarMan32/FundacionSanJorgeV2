@@ -16,14 +16,6 @@ class ListUsers extends ListRecords
         return [
             Actions\CreateAction::make()
             ->label('Nuevo Aspirante')
-            ->successNotification(
-                Notification::make()
-                    ->success()
-                    ->title('Aspirante creado')
-                    ->body('El nuevo aspirante ha sido registrado exitosamente.')
-                    ->persistent()
-                    ->send()
-            ),
         ];
     }
 }

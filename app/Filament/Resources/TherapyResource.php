@@ -3,15 +3,12 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TherapyResource\Pages;
-use App\Filament\Resources\TherapyResource\RelationManagers;
 use App\Models\Therapy;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TherapyResource extends Resource
 {
@@ -19,8 +16,8 @@ class TherapyResource extends Resource
 
     protected static ?string $navigationLabel = 'Terapias';
     protected static ?string $pluralLabel = 'Terapias';
-    protected static ?string $navigationGroup = 'Gestion de Citas';
-    protected static ?int $navigationSort = 6;
+    protected static ?string $navigationGroup = 'Gestion de Recursos';
+    protected static ?int $navigationSort = 9;
     protected static ?string $navigationIcon = 'heroicon-o-heart';
 
     public static function form(Form $form): Form

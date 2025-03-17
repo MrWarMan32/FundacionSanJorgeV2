@@ -97,8 +97,8 @@
 
             <p>Dichas sesiones se realizaron en horario de {{ \Carbon\Carbon::parse($shift['start_time'])->format('h:i A') }} a 
             {{ \Carbon\Carbon::parse($shift['end_time'])->format('h:i A') }} del día {{ $shift['appointment_day'] }}
-            {{ \Carbon\Carbon::now()->day }} del mes de {{ \Carbon\Carbon::now()->locale('es')->isoFormat('MMMM') }} 
-            del año {{ \Carbon\Carbon::now()->year }}.
+            {{ \Carbon\Carbon::parse($shift['date'])->day }} de {{ \Carbon\Carbon::parse($shift['date'])->locale('es')->isoFormat('MMMM') }}
+            del año {{ \Carbon\Carbon::parse($shift['date'])->year }}.
             </p>
     
             

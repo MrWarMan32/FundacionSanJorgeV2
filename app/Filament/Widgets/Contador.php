@@ -21,17 +21,23 @@ class Contador extends BaseWidget
                 ->chart([1, 5, 2, 8, 3, 10, 4])
                 ->color('info'),
 
-            Stat::make('Total de Aspirantes', User::query()
+            Stat::make('Aspirantes', User::query()
               ->where('status', 'aspirante')
               ->where('user_type', '!=', 'doctor')
               ->where('user_type', '!=', 'admin') 
               ->count()
             ),
 
-            Stat::make('Total de Pacientes', User::query()
+            Stat::make('Pacientes', User::query()
               ->where('status', 'paciente')
               ->where('user_type', '!=', 'doctor')
               ->where('user_type', '!=', 'admin')
+              ->count()
+            ),
+
+            Stat::make('Terapeutas', User::query()
+              ->where('user_type', '=', 'doctor')
+              ->where('user_type', '!=', 'admin') 
               ->count()
             ),
 

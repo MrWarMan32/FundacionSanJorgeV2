@@ -21,7 +21,7 @@ class CertificatesResource extends Resource
     protected static ?string $navigationLabel = 'Certificados de Asistencia';
     protected static ?string $pluralLabel = 'Certificados';
     protected static ?string $navigationGroup = 'Gestion de Recursos';
-    protected static ?int $navigationSort = 8;
+    protected static ?int $navigationSort = 6;
     protected static ?string $navigationIcon = 'heroicon-o-document-check';
 
      //NO MOSTRAR USUARIOS PACIENTES, DOCTORES  
