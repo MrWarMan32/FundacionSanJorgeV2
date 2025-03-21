@@ -159,6 +159,7 @@ class ShiftsResource extends Resource
             ->actions([
                 EditAction::make()
                 ->button()
+                ->label('Editar')
                 ->extraAttributes(['class' => 'bg-indigo-600 hover:bg-indigo-700']),
 
                 Action::make('completeShift')
@@ -177,8 +178,10 @@ class ShiftsResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                    Tables\Actions\DeleteBulkAction::make()
+                    ->label('Eliminar'),
+                ])
+                ->label('Acciones Masivas'),
             ]);
     }
 

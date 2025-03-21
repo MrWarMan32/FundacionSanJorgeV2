@@ -40,25 +40,29 @@ class TherapyResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('therapy_type')
-                    ->searchable()
-                    ->sortable(),
+                    ->label('Terapia')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('description')
-                    ->searchable()
-                    ->sortable(),
+                    ->label('Descripcion')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('duration')
-                    ->searchable()
-                    ->sortable(),  
+                    ->label('Duracion')  
+                    ->searchable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->label('Editar')
+                ->button(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                    Tables\Actions\DeleteBulkAction::make()
+                    ->label('Eliminar'),
+                ])
+                ->button('Acciones Masivas'),
             ]);
     }
 

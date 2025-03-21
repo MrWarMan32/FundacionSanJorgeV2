@@ -69,9 +69,6 @@ class GenerateRecurringShifts extends Command
                 // Establecemos la fecha de la nueva cita como la próxima semana
                 $newShift->date = $newDate->toDateString();
 
-                // Desactivamos la opción de modificada
-                $newShift->is_modified = false;
-
                 // Pasamos la nueva cita a pendiente
                 $newShift->status = 'Pendiente';
 

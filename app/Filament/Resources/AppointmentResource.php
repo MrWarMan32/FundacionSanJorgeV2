@@ -66,29 +66,28 @@ class AppointmentResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('doctor.name')
                     ->label('Doctor')
-                    ->sortable()
                     ->formatStateUsing(fn ($record) => $record->doctor->name . ' ' . $record->doctor->last_name)
-                    ->sortable()
                     ->searchable(),
+                    
                 Tables\Columns\TextColumn::make('therapy.therapy_type')
                     ->label('Terapia')
-                    ->sortable()
                     ->searchable(),
+
                 Tables\Columns\TextColumn::make('day')
                     ->label('Dia')
                     ->sortable()
                     ->searchable(),
+
                 Tables\Columns\TextColumn::make('start_time')
                     ->label('Hora de inicio')
-                    ->sortable()
                     ->searchable(),
+
                 Tables\Columns\TextColumn::make('end_time')
                     ->label('Hora de fin')
-                    ->sortable()
                     ->searchable(),
+
                 Tables\Columns\IconColumn::make('available')
                     ->label('Disponible')
-                    ->sortable()
                     ->searchable()
                     ->boolean(),
             ])
@@ -118,8 +117,10 @@ class AppointmentResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\DeleteBulkAction::make()
+                ->label('Eliminar'),
+                ])
+                ->label('Acciones Masivas')
             ]);
     }
 

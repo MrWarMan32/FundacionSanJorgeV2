@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\DoctorTherapyResource\Pages;
-use App\Filament\Resources\DoctorTherapyResource\RelationManagers;
 use App\Models\DoctorTherapy;
 use App\Models\Therapy;
 use App\Models\User;
@@ -12,11 +11,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Resources\Pages\ListRecords;
-use Filament\Resources\Pages\CreateRecord;
-use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\DB;
 
 class DoctorTherapyResource extends Resource  
@@ -52,30 +46,30 @@ class DoctorTherapyResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('doctor.name')
                 ->label('Nombres')
-                ->sortable()
                 ->formatStateUsing(fn ($record) => $record->doctor->name . ' ' . $record->doctor->last_name)
                 ->searchable(),
 
                 Tables\Columns\TextColumn::make('doctor.phone')
                 ->label('Telefono')
-                ->sortable()
                 ->searchable(),
 
                 Tables\Columns\TextColumn::make('therapy.therapy_type')
                 ->label('Terapia que imparte')
-                ->sortable()
                 ->searchable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->button(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                    Tables\Actions\DeleteBulkAction::make()
+                    ->label('Eliminar '),
+                ])
+                ->label('Acciones Masivas'),
             ]);
     }
 

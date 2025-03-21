@@ -121,6 +121,11 @@
             <p>COORDINADORA GENERAL</p>
             <p>FUNDACIÓN DE AYUDA MUTUA SAN JORGE</p>
         </div>
+
+        <!-- Pie de Página -->
+        <div class="footer">
+            <p>Contacto: famsanjorge@gmail.com</p>
+        </div>
     </div> 
 </body>
 </html>

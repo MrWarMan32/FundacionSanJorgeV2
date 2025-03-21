@@ -117,7 +117,7 @@
 
         <!-- Pie de Página -->
         <div class="footer">
-            <p>Contacto: famsanjorge@hotmail.com</p>
+            <p>Contacto: famsanjorge@gmail.com</p>
         </div>
     </div>
 </body>

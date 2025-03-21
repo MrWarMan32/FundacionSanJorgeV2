@@ -9,21 +9,8 @@ use App\Models\User;
 
 class CertificateController extends Controller
 {
-    public function generateCertificate($id)
-    {
-        $shift = $this->getDataForPdf($id);
 
-        $pdf = Pdf::loadView('certificates.certificate', ['shift' => $shift]);
-       
-        $patientName = str_replace(' ', '_', $shift['patient_name']);
-        $patientLastName = str_replace(' ', '_', $shift['patient_last_name']);
-        $patientId = $shift['patient_id']; 
-        $fileName = "Certificado_{$patientName}_{$patientLastName}_{$patientId}.pdf";
-
-        return $pdf->download($fileName);  
-        // return $pdf->download('certificate.pdf');
-    }
-
+    //controlador de data pára los pdf
     protected function getDataForPdf($shiftId)
     {
         // Obtén los datos necesarios para el PDF
@@ -44,11 +31,29 @@ class CertificateController extends Controller
         ];
     }
 
-    
+
+    //controlador para certificados de citas especificas
+    public function generateCertificate($id)
+    {
+        $shift = $this->getDataForPdf($id);
+
+        $pdf = Pdf::loadView('certificates.certificate', ['shift' => $shift]);
+       
+        $patientName = str_replace(' ', '_', $shift['patient_name']);
+        $patientLastName = str_replace(' ', '_', $shift['patient_last_name']);
+        $fileName = "Certificado_{$patientName}_{$patientLastName}.pdf";
+
+        return $pdf->download($fileName);  
+    }
+
+
+
+    //controlador para certificados de citas generales
     public function generateCertificate2($patientId)
     {
     // Obtener todas las citas del paciente
     $shift = Shifts::where('patient_id', $patientId)
+                   ->whereNull('parent_shift_id') // Solo citas originales
                    ->with('appointment') // Cargar relación con appointments
                    ->get();
 
@@ -65,6 +70,9 @@ class CertificateController extends Controller
     $pdf = PDF::loadView('certificates.certificate2', $data);
 
     // Descargar el certificado
-    return $pdf->download('certificado_' . $patient->first_name . '_' . $patient->last_name . '.pdf');
+    return $pdf->download('Certificado_' . $patient->name . '_' . $patient->last_name . '.pdf');
     }
+
+
+
 }

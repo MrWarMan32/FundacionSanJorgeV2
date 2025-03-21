@@ -17,9 +17,12 @@ use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Columns\Column;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 use App\Models\Address;
+use App\Models\Therapy;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -303,21 +306,47 @@ class PatientsResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label('Nombres'),
-                Tables\Columns\TextColumn::make('last_name')->label('Apellidos'),
-                Tables\Columns\TextColumn::make('phone')->label('Contacto de Representante'),
-                Tables\Columns\TextColumn::make('disability_type')->label('Discapacidad'),
-                // Tables\Columns\TextColumn::make('status')->label('Estado')->badge()->color('success'),
+                Tables\Columns\TextColumn::make('name')
+                ->searchable()
+                ->label('Nombres'),
+
+                Tables\Columns\TextColumn::make('last_name')
+                ->searchable()
+                ->label('Apellidos'),
+
+                Tables\Columns\TextColumn::make('phone')
+                ->searchable()
+                ->label('Contacto de Representante'),
+
+                Tables\Columns\TextColumn::make('disability_type')
+                ->searchable()
+                ->label('Discapacidad'),
+                
             ])
             ->filters([
-                //
+                Filter::make('age')
+                ->form([
+                    Forms\Components\TextInput::make('min_age')->label('Edad mínima'),
+                    Forms\Components\TextInput::make('max_age')->label('Edad máxima'),
+                ])
+                ->query(function ($query, array $data) {
+                    if (!empty($data['min_age'])) {
+                        $query->where('age', '>=', $data['min_age']);
+                    }
+                    if (!empty($data['max_age'])) {
+                        $query->where('age', '<=', $data['max_age']);
+                    }
+                })
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
+                ->button()
                 ->label('Editar'),
 
                 Action::make('desaprobar')
                 ->label('Desaprobar')
+                ->button()
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
                 ->action(fn ($record) => $record->update(['status' => 'aspirante']))
