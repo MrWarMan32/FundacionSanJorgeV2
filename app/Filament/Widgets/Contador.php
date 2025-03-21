@@ -2,13 +2,12 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Therapy;
 use Filament\Forms\Components\Select as ComponentsSelect;
 use Filament\Forms\Components\TextInput as ComponentsTextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Filament\Forms\TextInput;
-use Filament\Forms\Select;
 use Illuminate\Foundation\Auth\User;
 
 class Contador extends BaseWidget
@@ -16,7 +15,7 @@ class Contador extends BaseWidget
 
   use InteractsWithForms;
 
-  
+
     protected function getStats(): array
     {
       return [
@@ -60,7 +59,49 @@ class Contador extends BaseWidget
             ->where('user_type', '!=', 'doctor')
             ->where('user_type', '!=', 'admin')
             ->count()
-        )
+        ),
+
+        
+          // Agregar estadística de pacientes por terapia
+          Stat::make('Pacientes por Terapia Fisica', function () {
+            $therapyId = 1;
+                // Contar los pacientes con citas asignadas a esta terapia
+                $count = User::query()
+                ->join('shifts', 'users.id', '=', 'shifts.patient_id')
+                ->where('shifts.therapy_id', $therapyId)
+                ->where('users.status', 'paciente')
+                ->distinct()
+                ->count('users.id');  // Contamos por pacientes distintos
+              return $count;
+        }),
+
+        // Agregar estadística de pacientes por terapia
+        Stat::make('Pacientes por Terapia de Lenguaje', function () {
+          $therapyId = 2;
+              // Contar los pacientes con citas asignadas a esta terapia
+              $count = User::query()
+              ->join('shifts', 'users.id', '=', 'shifts.patient_id')
+              ->where('shifts.therapy_id', $therapyId)
+              ->where('users.status', 'paciente')
+              ->distinct()
+              ->count('users.id');  // Contamos por pacientes distintos
+            return $count;
+      }),
+
+      // Agregar estadística de pacientes por terapia
+      Stat::make('Pacientes por Terapia Ocupacional', function () {
+        $therapyId = 3;
+            // Contar los pacientes con citas asignadas a esta terapia
+            $count = User::query()
+            ->join('shifts', 'users.id', '=', 'shifts.patient_id')
+            ->where('shifts.therapy_id', $therapyId)
+            ->where('users.status', 'paciente')
+            ->distinct()
+            ->count('users.id');  // Contamos por pacientes distintos
+          return $count;
+    }),
+
+
 
       ];
     }
@@ -69,4 +110,5 @@ class Contador extends BaseWidget
     {
         $this->refresh(); // Para refrescar el widget después de actualizar el estado
     }
+
 }

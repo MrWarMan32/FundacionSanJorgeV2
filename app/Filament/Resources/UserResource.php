@@ -121,7 +121,6 @@ class UserResource extends Resource
                     ->label('Edad')
                     ->nullable()
                     ->numeric(),
-                    // ->disabled(),
 
                     Forms\Components\Select::make('ethnicity')
                     ->label('Etnia')
@@ -172,9 +171,10 @@ class UserResource extends Resource
                     ->required(),
 
                     Forms\Components\TextInput::make('disability_grade')
-                   ->label('Grado de Discapacidad')
-                   ->nullable()
-                   ->numeric(),
+                    ->label('Grado de Discapacidad')
+                    ->minValue(0)
+                    ->maxValue(100)
+                    ->numeric(),
 
                    Forms\Components\TextArea::make('diagnosis')
                    ->label('Diagnóstico')
@@ -209,7 +209,9 @@ class UserResource extends Resource
                     Forms\Components\TextInput::make('phone')
                     ->label('Teléfono')
                     ->nullable()
-                    ->maxLength(20),
+                    ->regex('/^[0-9]+$/')
+                    ->minLength(10)
+                    ->maxLength(10),
 
                  ]),
 
@@ -217,7 +219,7 @@ class UserResource extends Resource
 
                     Select::make('id_address')
                     ->label('Direccion')
-                    ->nullable()
+                    ->required()
                     ->options(Address::all()->mapWithKeys(function ($address) {
                         $parroquia = $address->parroquia ? $address->parroquia->parroquia : 'Parroquia no definida';
                         $street_1 = $address->street_1 ?? 'Calle principal no definida';
@@ -266,12 +268,12 @@ class UserResource extends Resource
 
                         TextInput::make('street_2')
                         ->label('Calle Secundaria')
-                        ->nullable()
+                        ->required()
                         ->maxLength(100),
 
                         Textarea::make('reference')
                         ->label('Referencia')
-                        ->nullable()
+                        ->required()
                         ->maxLength(255),
                     ])
                     ->createOptionUsing(function (array $data): int {

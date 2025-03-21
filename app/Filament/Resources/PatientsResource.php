@@ -336,7 +336,23 @@ class PatientsResource extends Resource
                     if (!empty($data['max_age'])) {
                         $query->where('age', '<=', $data['max_age']);
                     }
-                })
+                }),
+
+                SelectFilter::make('therapy_id')
+                ->label('Terapia')
+                ->options(Therapy::pluck('therapy_type', 'id')) // Suponiendo que tienes un modelo Therapy con nombres de terapias
+                ->searchable()
+                ->multiple(),
+
+                SelectFilter::make('disability_level')
+    ->label('Nivel de Discapacidad')
+    ->options([
+        'En Proceso' => 'En Proceso',
+        'Leve' => 'Leve',
+        'Moderado' => 'Moderado',
+        'Grave' => 'Grave',
+        'Muy Grave' => 'Muy Grave',
+    ]),
 
             ])
             ->actions([
