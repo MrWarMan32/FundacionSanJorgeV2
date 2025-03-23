@@ -180,6 +180,22 @@ class ShiftsResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
                     ->label('Eliminar'),
+
+                    Tables\Actions\BulkAction::make('completeShifts')
+                        ->label('Completar Citas')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->action(function ($records) {  
+                            $total = $records->count();
+                            foreach ($records as $record) {
+                             $record->update(['status' => 'Completada']);
+                            }
+                        Notification::make()
+                            ->success()
+                            ->title('Citas completadas')
+                            ->body("$total citas han sido marcadas como completadas.")
+                            ->send();
+                        }),
                 ])
                 ->label('Acciones Masivas'),
             ]);

@@ -16,6 +16,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Therapy;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TimePicker;
+use Filament\Tables\Columns\TextColumn;
 
 class AppointmentResource extends Resource
 {
@@ -33,26 +36,45 @@ class AppointmentResource extends Resource
         return $form
         
             ->schema([
-                Forms\Components\TextInput::make('doctor_id')
-                    ->label('Doctor')
-                    ->options(User::where('user_type', 'doctor')->pluck(DB::raw("CONCAT(name, ' ', last_name)"), 'id'))
-                    ->searchable()
-                    ->required(),
-                    // ->numeric(),
-                Forms\Components\TextInput::make('therapy_id')
+                Select::make('therapy_id')
                    ->label('Terapia')
                    ->options(Therapy::pluck('therapy_type', 'id'))
                    ->searchable()
                    ->required(),
-                Forms\Components\TextInput::make('day')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('start_time')
-                    ->required(),
-                Forms\Components\TextInput::make('end_time')
-                    ->required(),
+
+                Select::make('doctor_id')
+                   ->label('Doctor')
+                   ->options(fn (callable $get) => User::where('user_type', 'doctor')
+                     ->whereHas('appointments', fn ($query) => $query->where('therapy_id', $get('therapy_id')))
+                     ->pluck('name', 'id'))
+                   ->searchable()
+                   ->reactive()
+                   ->required(),
+
+                Select::make('day')
+                    ->label('Dia')
+                   ->options([
+                       'Lunes' => 'Lunes',
+                       'Martes' => 'Martes',
+                       'Miercoles' => 'Miércoles',
+                       'Jueves' => 'Jueves',
+                       'Viernes' => 'Viernes',
+                   ])
+                   ->required(),
+
+                TimePicker::make('start_time')
+                ->label('Hors de inicio')
+                   ->required()
+                   ->seconds(false), // Opcional, para ocultar los segundos
+               
+               TimePicker::make('end_time')
+                   ->label('Hora de fin')
+                   ->required()
+                   ->seconds(false),
+
                 Forms\Components\Toggle::make('available')
-                    ->required(),
+                    ->default(true)
+                    ->hidden(),
             ]);
     }
 

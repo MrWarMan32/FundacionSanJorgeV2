@@ -89,7 +89,7 @@ class Contador extends BaseWidget
       }),
 
       // Agregar estadística de pacientes por terapia
-      Stat::make('Pacientes por Terapia Ocupacional', function () {
+      Stat::make('Pacientes por Terapia Ocupacional (Hipoterapia)', function () {
         $therapyId = 3;
             // Contar los pacientes con citas asignadas a esta terapia
             $count = User::query()
