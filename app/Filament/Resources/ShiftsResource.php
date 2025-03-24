@@ -18,6 +18,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\DatePicker;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 
 class ShiftsResource extends Resource
@@ -26,6 +27,7 @@ class ShiftsResource extends Resource
 
     protected static ?string $navigationLabel = 'Citas Pendientes';
     protected static ?string $pluralLabel = 'Citas Pendientes';
+    protected static ?string $modelLabel = 'Cita';
 
     protected static ?string $navigationGroup = 'Gestion de Citas';
 
@@ -136,22 +138,25 @@ class ShiftsResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('patient.name')
+                TextColumn::make('patient.name')
                     ->label('Paciente')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('doctor.name')
+                TextColumn::make('doctor.name')
                     ->label('Doctor')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('therapy.therapy_type')
+                TextColumn::make('therapy.therapy_type')
                     ->label('Terapia')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('date')
-                    ->label('Fecha')
-                    ->searchable(),
+                TextColumn::make('appointment.day')
+                    ->label('Día'),
 
+                TextColumn::make('date')
+                    ->label('Fecha')
+                    ->badge()
+                    ->searchable(),
             ])
             ->filters([
                 //

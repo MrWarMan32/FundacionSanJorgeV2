@@ -16,6 +16,7 @@ class TherapyResource extends Resource
 
     protected static ?string $navigationLabel = 'Terapias';
     protected static ?string $pluralLabel = 'Terapias';
+    protected static ?string $modelLabel = 'Terapia';
     protected static ?string $navigationGroup = 'Gestion de Recursos';
     protected static ?int $navigationSort = 9;
     protected static ?string $navigationIcon = 'heroicon-o-heart';

@@ -18,6 +18,7 @@ class CompletedShiftResource extends Resource
 
     protected static ?string $navigationLabel = 'Citas Completadas';
     protected static ?string $pluralLabel = 'Citas Completadas';
+    protected static ?string $modelLabel = 'Cita';
 
     protected static ?string $navigationGroup = 'Gestion de Citas';
     protected static ?int $navigationSort = 5;
