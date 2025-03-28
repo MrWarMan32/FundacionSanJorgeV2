@@ -97,7 +97,6 @@ class ShiftsResource extends Resource
                 ->preload()
                 ->required()
                 ->afterStateHydrated(fn ($set, $record) => $set('day', $record?->appointment?->day)),
-            
 
                 // Seleccionar Horario Disponible
                 Select::make('appointment_id')
@@ -109,12 +108,15 @@ class ShiftsResource extends Resource
                     ->orderBy('start_time')
                     ->get()
                 ->mapWithKeys(fn ($appointment) => [
-                $appointment->id => $appointment->start_time . ' - ' . $appointment->end_time ////////////////////
+                $appointment->id => $appointment->start_time . ' - ' . $appointment->end_time 
                 ]))
                 ->searchable()
                 ->preload()
                 ->required()
-                ->reactive(),
+                ->reactive()
+                ->formatStateUsing(fn ($state) => 
+                    $state ? Appointment::find($state)?->start_time . ' - ' . Appointment::find($state)?->end_time : null
+                ),
 
                 Textarea::make('notes')
                     ->label('Notas')
@@ -159,7 +161,10 @@ class ShiftsResource extends Resource
                     ->searchable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('therapy_id')
+                ->label('Filtrar por Terapia')
+                ->options(Therapy::all()->pluck('therapy_type', 'id'))
+                ->searchable()
             ])
             ->actions([
                 EditAction::make()

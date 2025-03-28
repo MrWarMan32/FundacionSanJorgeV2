@@ -39,6 +39,7 @@ class Shifts extends Model
         return $this->belongsTo(Therapy::class, 'therapy_id');
     }
 
+    //relacion horario
     public function appointment()
     {
         return $this->belongsTo(Appointment::class, 'appointment_id');

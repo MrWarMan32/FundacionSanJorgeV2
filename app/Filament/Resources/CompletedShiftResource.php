@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CompletedShiftResource\Pages;
 use App\Models\Shifts;
+use App\Models\Therapy;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -62,7 +64,19 @@ class CompletedShiftResource extends Resource
                     ->searchable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('therapy_id')
+                    ->label('Filtrar por Terapia')
+                    ->options(Therapy::all()->pluck('therapy_type', 'id'))
+                    ->searchable(),
+
+                Tables\Filters\Filter::make('date')
+                    ->label('Filtrar por Fecha')
+                    ->form([
+                        DatePicker::make('date')->label('Selecciona una fecha')
+                    ])
+                    ->query(fn (Builder $query, array $data) => 
+                        $query->when($data['date'], fn ($q) => $q->whereDate('date', $data['date']))
+                    )
             ])
             ->actions([
                 Action::make('downloadPdf')

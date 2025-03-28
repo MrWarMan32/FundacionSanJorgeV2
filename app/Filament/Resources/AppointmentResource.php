@@ -62,6 +62,7 @@ class AppointmentResource extends Resource
                        'Miercoles' => 'Miércoles',
                        'Jueves' => 'Jueves',
                        'Viernes' => 'Viernes',
+                       'Pivote' => 'Pivote (Para intercambio de citas)',
                    ])
                    ->required(),
 
