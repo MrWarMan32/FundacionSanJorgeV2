@@ -132,7 +132,7 @@ class ShiftsResource extends Resource
                     ->visible(fn ($get) => $get('id') !== null)
                     ->helperText('Si activas esto, solo se cambiará esta cita. Si no, se modificarán todas las futuras citas recurrentes.')
                     ->default(false),
-                ]);
+            ]);
            
     }
 
@@ -226,7 +226,4 @@ class ShiftsResource extends Resource
             'edit' => Pages\EditShifts::route('/{record}/edit'),
         ];
     }
-
-
-
 }

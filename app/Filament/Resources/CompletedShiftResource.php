@@ -5,14 +5,18 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CompletedShiftResource\Pages;
 use App\Models\Shifts;
 use App\Models\Therapy;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Columns\Column;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class CompletedShiftResource extends Resource
 {
@@ -39,7 +43,7 @@ class CompletedShiftResource extends Resource
     {
         return $form
             ->schema([
-                //
+                
             ]);
     }
 
@@ -49,20 +53,51 @@ class CompletedShiftResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('patient.name')
                     ->label('Paciente')
+                    ->disableClick()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('doctor.name')
                     ->label('Doctor')
+                    ->disableClick()
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('therapy.therapy_type')
                     ->label('Terapia')
+                    ->disableClick()
+                    ->searchable(),
+                
+                Tables\Columns\TextColumn::make('appointment')
+                    ->label('Fecha y Hora')
+                    ->disableClick()
+                    ->formatStateUsing(fn ($record) =>
+                        ucfirst($record->appointment->day) . ' - ' .
+                        Carbon::parse($record->date)->format('d/m/Y') . ' - ' . 
+                        Carbon::parse($record->appointment->start_time)->format('h:i') . ' - ' . 
+                        Carbon::parse($record->appointment->end_time)->format('h:i A')
+                    )
+                    ->searchable(),
+                
+                Tables\Columns\TextColumn::make('appointment.day')
+                    ->label('Dia')
+                    ->hidden()
                     ->searchable(),
 
+                Tables\Columns\TextColumn::make('appointment.start_time')
+                    ->label('Hora de Inicio')
+                    ->hidden()
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('appointment.end_time')
+                    ->label('Hora de Fin')
+                    ->hidden()
+                    ->searchable(),
+                
                 Tables\Columns\TextColumn::make('date')
                     ->label('Fecha')
+                    ->hidden()
                     ->searchable(),
             ])
+
             ->filters([
                 Tables\Filters\SelectFilter::make('therapy_id')
                     ->label('Filtrar por Terapia')
@@ -85,14 +120,20 @@ class CompletedShiftResource extends Resource
                 ->extraAttributes(['class' => 'bg-indigo-600 hover:bg-indigo-700'])
                 ->requiresConfirmation()
                 ->url(fn ($record) => route('certificates.generate', $record->id))
-                ->openUrlInNewTab(),
+                // ->openUrlInNewTab(),
             ])
             ->bulkActions([
-                // Tables\Actions\BulkActionGroup::make([
-                //     Tables\Actions\DeleteBulkAction::make(),
-                // ]),
+                ExportBulkAction::make()->exports([
+                    ExcelExport::make('Exportar datos')->fromTable()
+                    ->askForFilename()
+                    ->except([
+                        'appointment',
+                     ])
+                ])
+                ->label('Exportar Datos'),
             ]);
     }
+
 
     public static function getRelations(): array
     {

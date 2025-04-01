@@ -64,7 +64,7 @@ class CertificatesResource extends Resource
                 ->extraAttributes(['class' => 'bg-indigo-600 hover:bg-indigo-700'])
                 ->requiresConfirmation()
                 ->url(fn ($record) => route('certificates.generate2', $record->id))
-                ->openUrlInNewTab(),
+                // ->openUrlInNewTab(),
             ])
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([

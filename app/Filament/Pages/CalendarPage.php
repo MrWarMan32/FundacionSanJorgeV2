@@ -10,9 +10,5 @@ class CalendarPage extends Page
     protected static ?string $navigationLabel = 'Calendario de Citas';
 
     protected static string $view = 'filament.pages.calendar-page';
-
-    // public function mount(): void
-    // {
-    //     $this->livewire = CalendarComponent::class;
-    // }
+    
 }
