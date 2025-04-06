@@ -123,14 +123,22 @@ class CompletedShiftResource extends Resource
                 // ->openUrlInNewTab(),
             ])
             ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make()
+                    ->label('Eliminar'),
+
                 ExportBulkAction::make()->exports([
                     ExcelExport::make('Exportar datos')->fromTable()
-                    ->askForFilename()
-                    ->except([
-                        'appointment',
-                     ])
+                        ->askForFilename()
+                        ->except([
+                            'appointment',
+                         ])
+                    ])
+                    ->color('info')
+                    ->label('Exportar Datos'),
+                
                 ])
-                ->label('Exportar Datos'),
+                ->label('Acciones Masivas'),
             ]);
     }
 

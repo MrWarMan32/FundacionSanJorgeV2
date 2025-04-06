@@ -6,6 +6,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 Route::get('/', function () {
     return view('welcome');
+    //return redirect('/admin/login');
 });
 
 Route::get('/certificates/{id}', [CertificateController::class, 'generateCertificate'])->name('certificates.generate');

@@ -11,4 +11,10 @@ class CalendarPage extends Page
 
     protected static string $view = 'filament.pages.calendar-page';
     
+    // Esto oculta la página del menú de navegación DESARROLLO
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false; 
+    }
+
 }

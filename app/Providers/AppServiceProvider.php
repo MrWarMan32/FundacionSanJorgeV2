@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 use Filament\Facades\Filament;
-
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,8 +18,7 @@ class AppServiceProvider extends ServiceProvider
      * Bootstrap any application services.
      */
     public function boot(): void
-    {
-        
+    {   
         Filament::serving(function () {
             Filament::registerRenderHook('panels::footer', fn () => view('components.footer'));
         });

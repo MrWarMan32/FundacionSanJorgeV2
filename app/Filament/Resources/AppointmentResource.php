@@ -19,6 +19,8 @@ use App\Models\Therapy;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TimePicker;
 use Filament\Tables\Columns\TextColumn;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class AppointmentResource extends Resource
 {
@@ -116,6 +118,10 @@ class AppointmentResource extends Resource
                     ->label('Disponible')
                     ->searchable()
                     ->boolean(),
+                
+                Tables\Columns\IconColumn::make('patiend_id')
+                    ->label('Paciente')
+                    ->searchable(),
             ])
             ->filters([
             // Filtro para la terapia
@@ -139,12 +145,20 @@ class AppointmentResource extends Resource
                 ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->button(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                 Tables\Actions\DeleteBulkAction::make()
                 ->label('Eliminar'),
+
+                ExportBulkAction::make()->exports([
+                    ExcelExport::make('Exportar datos')->fromTable()
+                        ->askForFilename()
+                    ])
+                    ->color('info')
+                    ->label('Exportar Datos'),
                 ])
                 ->label('Acciones Masivas')
             ]);
@@ -164,7 +178,6 @@ class AppointmentResource extends Resource
             'create' => Pages\CreateAppointment::route('/create'),
             'edit' => Pages\EditAppointment::route('/{record}/edit'),
 
-            'schedule' => Pages\AppointmentSchedule::route('/schedule'),
         ];
     }
 }
